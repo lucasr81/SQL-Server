@@ -1,4 +1,4 @@
-Markdown# Criando Banco de Dados com SQL Server – Sintaxe Mínima e Prática
+Criando Banco de Dados com SQL Server – Sintaxe Mínima e Prática
 Hoje vou explicar de um jeito simples e direto como criar (e mexer um pouco) em bancos de dados no SQL Server. Vamos passo a passo, como se eu estivesse explicando na mesa do café.
 
 ### 1. A forma mais simples e rápida de criar um banco  
