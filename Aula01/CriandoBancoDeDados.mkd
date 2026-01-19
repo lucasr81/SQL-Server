@@ -1,0 +1,93 @@
+Markdown# Criando Banco de Dados com SQL Server – Sintaxe Mínima e Prática
+Hoje vou explicar de um jeito simples e direto como criar (e mexer um pouco) em bancos de dados no SQL Server. Vamos passo a passo, como se eu estivesse explicando na mesa do café.
+
+### 1. A forma mais simples e rápida de criar um banco  
+(quase todo mundo usa assim no começo)
+
+```sql
+CREATE DATABASE Biblioteca
+Pronto. É isso.
+O SQL Server cria o banco "Biblioteca" usando as configurações padrão:
+
+local padrão dos arquivos
+tamanho inicial pequeno
+cresce automático quando precisa
+
+É tipo pedir pro Windows: "cria uma pasta nova pra mim" sem falar onde nem qual tamanho. Ele resolve sozinho.
+
+2. A versão mais "controladora" (quando você quer decidir tudo)
+SQL CREATE DATABASE Biblioteca
+ON PRIMARY
+(
+    NAME = Biblioteca,                           -- nome lógico do arquivo de dados
+    FILENAME = 'C:\SQL\Biblioteca.mdf',          -- onde vai ficar fisicamente
+    SIZE = 8MB,                                  -- tamanho inicial
+    MAXSIZE = 15MB,                              -- tamanho máximo que pode crescer
+    FILEGROWTH = 10%                             -- cresce 10% toda vez que precisar
+)
+LOG ON
+(
+    NAME = Biblioteca_log,
+    FILENAME = 'C:\SQL\Biblioteca.ldf',
+    SIZE = 1MB,
+    FILEGROWTH = 1MB
+)
+GO
+Essa versão é mais verbosa, mas te dá controle total. Aqui você está dizendo:
+
+Onde os arquivos vão ficar (muito útil em servidor de verdade)
+Qual o tamanho inicial
+Até quanto pode crescer
+De quanto em quanto cresce (fixo ou porcentagem)
+
+Na vida real a gente quase nunca coloca MAXSIZE tão pequeno (15 MB). É só exemplo pra ficar didático.
+3. Como ver quais bancos já existem no servidor?
+Duas formas bem comuns:
+SQL-- Forma moderna e recomendada
+SELECT name 
+FROM master.sys.databases 
+ORDER BY name;
+
+-- Forma antiga (mas ainda funciona em todo lugar)
+EXEC sp_databases;
+A primeira é mais "SQL puro".
+A segunda é um procedurinho antigo que mostra uma listinha bonitinha.
+4. "Tô dentro desse banco agora!"
+SQLUSE Biblioteca;
+Depois disso, todos os comandos que você rodar (CREATE TABLE, INSERT, SELECT...) vão acontecer dentro do banco Biblioteca.
+É tipo dar cd Biblioteca no prompt de comando.
+5. Quero ver detalhes de um banco específico
+SQLEXEC sp_helpdb 'Biblioteca';
+Mostra:
+
+tamanho dos arquivos
+caminho físico
+status
+etc.
+
+Bem útil pra debugar quando algo dá errado.
+6. Como apagar um banco de dados (o básico)
+SQLDROP DATABASE IF EXISTS Biblioteca;
+O IF EXISTS é maravilhoso (disponível a partir do SQL Server 2016).
+Evita aquele erro chato quando você tenta apagar e o banco nem existe.
+7. Quando o banco tá "ocupado" e não deixa apagar
+Às vezes tem gente conectada, sessão aberta, aplicação usando... aí ele reclama.
+Jeito mais comum e "sem dó" de forçar a exclusão:
+SQLUSE master          -- mudo pro master pra não ficar "dentro" do banco que quero apagar
+GO
+
+ALTER DATABASE Biblioteca
+SET SINGLE_USER WITH ROLLBACK IMMEDIATE;   -- corta todas as conexões na marra
+
+DROP DATABASE Biblioteca;
+WITH ROLLBACK IMMEDIATE = "tô nem aí, mata todas as conexões agora!"
+É pesado, mas às vezes é exatamente o que a gente precisa em ambiente de desenvolvimento/teste.
+
+Resumão rápido pra gravar na cabeça:
+
+Muito simples:          CREATE DATABASE MeuBanco
+Controle total:         CREATE DATABASE ... ON PRIMARY (...) LOG ON ...
+Entrar no banco:        USE MeuBanco
+Ver lista:              SELECT name FROM sys.databases
+Apagar tranquilo:       DROP DATABASE IF EXISTS MeuBanco
+Apagar na marra:        ALTER DATABASE ... SET SINGLE_USER WITH ROLLBACK IMMEDIATE + DROP
