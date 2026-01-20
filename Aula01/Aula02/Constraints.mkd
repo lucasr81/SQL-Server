@@ -1,0 +1,100 @@
+Markdown# Constraints no SQL Server – O que são e como usar (sem enrolação)
+
+Constraints (restrições) são regras que você coloca nas colunas ou tabelas para **garantir que os dados façam sentido** e sigam as regras do negócio. Elas evitam bagunça no banco e protegem a integridade dos dados.
+
+Pensa assim:  
+Constraints = "o porteiro chato que não deixa entrar dados errados"
+
+Vamos ver as principais, com exemplos práticos e linguagem de gente normal.
+
+## 1. PRIMARY KEY (Chave Primária)
+- Identifica **unicamente** cada linha da tabela
+- Não aceita nulos (NULL)
+- Só pode ter **uma** por tabela
+- Geralmente é um ID auto-incremento
+
+```sql
+CREATE TABLE Alunos (
+    Id INT PRIMARY KEY IDENTITY(1,1),    -- IDENTITY = auto-incremento
+    Nome VARCHAR(100) NOT NULL
+);
+Ou adicionando depois:
+SQLALTER TABLE Alunos
+ADD CONSTRAINT PK_Alunos PRIMARY KEY (Id);
+2. FOREIGN KEY (Chave Estrangeira)
+
+Cria relacionamento entre tabelas
+Garante que o valor existe na tabela referenciada
+Evita "órfãos" (ex: empréstimo de livro que não existe)
+
+SQLCREATE TABLE Livros (
+    Id INT PRIMARY KEY IDENTITY,
+    Titulo VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE Emprestimos (
+    Id INT PRIMARY KEY IDENTITY,
+    LivroId INT NOT NULL,
+    AlunoId INT NOT NULL,
+    
+    CONSTRAINT FK_Emprestimos_Livros FOREIGN KEY (LivroId) 
+        REFERENCES Livros(Id),
+        
+    CONSTRAINT FK_Emprestimos_Alunos FOREIGN KEY (AlunoId) 
+        REFERENCES Alunos(Id)
+);
+Se tentar inserir um empréstimo com LivroId que não existe → erro!
+3. NOT NULL
+
+Simples e poderoso: não aceita valor nulo
+
+SQLCREATE TABLE Autores (
+    Id INT PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL,          -- obrigatório preencher
+    Nacionalidade VARCHAR(50)            -- pode ser nulo
+);
+4. UNIQUE
+
+Garante que não existam valores duplicados na coluna (ou conjunto de colunas)
+Diferente do PRIMARY KEY: aceita NULL (mas só um NULL)
+
+SQLCREATE TABLE Usuarios (
+    Id INT PRIMARY KEY,
+    Email VARCHAR(150) UNIQUE,           -- ninguém pode ter o mesmo email
+    CPF CHAR(11) UNIQUE
+);
+Ou em várias colunas:
+SQLALTER TABLE Emprestimos
+ADD CONSTRAINT UK_Emprestimo_Ativo UNIQUE (AlunoId, LivroId, DataDevolucao);
+5. CHECK
+
+Permite criar regras personalizadas
+Muito útil pra validar faixa de valores, formatos, etc.
+
+SQLCREATE TABLE Livros (
+    Id INT PRIMARY KEY,
+    Titulo VARCHAR(200) NOT NULL,
+    AnoPublicacao INT,
+    
+    CONSTRAINT CHK_Ano_Valido CHECK (AnoPublicacao >= 1500 AND AnoPublicacao <= YEAR(GETDATE()) + 1)
+);
+
+-- Ou algo mais criativo:
+CONSTRAINT CHK_Titulo_Nao_Vazio CHECK (LEN(TRIM(Titulo)) > 0)
+6. DEFAULT
+
+Coloca um valor padrão quando o usuário não informa nada
+
+SQLCREATE TABLE Emprestimos (
+    Id INT PRIMARY KEY IDENTITY,
+    DataEmprestimo DATE NOT NULL DEFAULT GETDATE(),   -- hoje automaticamente
+    DataDevolucao DATE,
+    Multa DECIMAL(10,2) DEFAULT 0.00
+);
+Resumão Rápido das Constraints
+ConstraintO que fazAceita NULL?Quantas por coluna/tabela?PRIMARY KEYIdentificador único + NOT NULLNão1 por tabelaFOREIGN KEYRelaciona com outra tabelaSim (se não NOT NULL)VáriasUNIQUEValores únicosSim (1 NULL)VáriasNOT NULLCampo obrigatórioNãoVáriasCHECKRegra personalizada—VáriasDEFAULTValor padrão se não informado—Várias
+Dica de ouro na vida real
+
+Use nomes claros nas constraints (ex: PK_Alunos, FK_Emprestimos_Livros, CHK_Idade_Maior_18)
+Coloque o máximo de regras no momento da criação da tabela (é mais fácil)
+Se esquecer de colocar constraint e precisar adicionar depois → use ALTER TABLE ... ADD CONSTRAINT
