@@ -1,49 +1,125 @@
 # Constraints no SQL Server  
-Guia prático e direto – sem enrolação
+### Guia prático e direto – sem enrolação
 
-Constraints (restrições) são regras definidas em colunas ou tabelas para **garantir a integridade e a consistência dos dados**.  
-Elas funcionam como "porteiros" que impedem a entrada de dados inválidos, duplicados ou inconsistentes com as regras do negócio.
+**Constraints (restrições)** são regras definidas em colunas ou tabelas para **garantir a integridade e a consistência dos dados**.
 
-## Principais tipos de Constraints
+Elas funcionam como **“porteiros”**, impedindo a entrada de dados inválidos, duplicados ou inconsistentes com as regras do negócio.
 
-### 1. PRIMARY KEY (Chave Primária)
+---
+
+## Principais Tipos de Constraints
+
+---
+
+## 1. PRIMARY KEY (Chave Primária)
+
 - Identifica **unicamente** cada registro
-- Não permite valores nulos (NULL)
+- **Não permite** valores `NULL`
 - Apenas **uma** por tabela
-- Normalmente usada com IDENTITY (auto-incremento)
+- Normalmente usada com `IDENTITY` (auto incremento)
 
 ```sql
--- Exemplo na criação da tabela
 CREATE TABLE Alunos (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Nome VARCHAR(100) NOT NULL,
     DataNascimento DATE
 );
-
--- Ou adicionando depois (se a tabela já existir)
+sql
+Copiar código
 ALTER TABLE Alunos
 ADD CONSTRAINT PK_Alunos PRIMARY KEY (Id);
-
 2. FOREIGN KEY (Chave Estrangeira)
-
 Estabelece relacionamento entre tabelas
-Garante que o valor exista na tabela referenciada
-Evita dados "órfãos" (ex.: registro filho sem pai)
 
-SQLCREATE TABLE Categorias (
+Garante que o valor exista na tabela referenciada
+
+Evita dados órfãos
+
+sql
+Copiar código
+CREATE TABLE Categorias (
     Id INT PRIMARY KEY IDENTITY,
     Nome VARCHAR(50) NOT NULL
 );
-
+sql
+Copiar código
 CREATE TABLE Produtos (
     Id INT PRIMARY KEY IDENTITY,
     Nome VARCHAR(100) NOT NULL,
     CategoriaId INT NOT NULL,
-    
-    CONSTRAINT FK_Produtos_Categorias 
+
+    CONSTRAINT FK_Produtos_Categorias
     FOREIGN KEY (CategoriaId) REFERENCES Categorias(Id)
 );
-Adicionando depois:
-SQLALTER TABLE Produtos
-ADD CONSTRAINT FK_Produtos_Categorias 
+sql
+Copiar código
+ALTER TABLE Produtos
+ADD CONSTRAINT FK_Produtos_Categorias
 FOREIGN KEY (CategoriaId) REFERENCES Categorias(Id);
+3. NOT NULL
+Campo obrigatório
+
+Não aceita valores NULL
+
+sql
+Copiar código
+CREATE TABLE Clientes (
+    Id INT PRIMARY KEY IDENTITY,
+    Nome VARCHAR(100) NOT NULL,
+    Email VARCHAR(150),
+    DataCadastro DATE DEFAULT GETDATE()
+);
+4. UNIQUE
+Garante valores únicos
+
+Permite apenas um NULL
+
+Pode ser usado em uma ou mais colunas
+
+sql
+Copiar código
+CREATE TABLE Usuarios (
+    Id INT PRIMARY KEY IDENTITY,
+    Email VARCHAR(150) UNIQUE,
+    CPF CHAR(11) UNIQUE
+);
+sql
+Copiar código
+ALTER TABLE Pedidos
+ADD CONSTRAINT UK_Pedido_Cliente_Data
+UNIQUE (ClienteId, DataPedido);
+5. CHECK
+Validação personalizada
+
+sql
+Copiar código
+CREATE TABLE Funcionarios (
+    Id INT PRIMARY KEY IDENTITY,
+    Nome VARCHAR(100) NOT NULL,
+    Salario DECIMAL(10,2),
+    Idade INT,
+
+    CONSTRAINT CHK_Salario_Positive CHECK (Salario > 0),
+    CONSTRAINT CHK_Idade_Adulto CHECK (Idade >= 18),
+    CONSTRAINT CHK_Nome_Nao_Vazio CHECK (LEN(TRIM(Nome)) > 0)
+);
+6. DEFAULT
+Valor padrão quando não informado
+
+sql
+Copiar código
+CREATE TABLE Tarefas (
+    Id INT PRIMARY KEY IDENTITY,
+    Descricao VARCHAR(500) NOT NULL,
+    DataCriacao DATETIME NOT NULL DEFAULT GETDATE(),
+    Concluida BIT NOT NULL DEFAULT 0,
+    Prioridade INT NOT NULL DEFAULT 3
+);
+Resumo Rápido – Comparação de Constraints
+Constraint	Objetivo principal	Permite NULL?	Quantidade típica	Exemplo comum
+PRIMARY KEY	Identificador único e obrigatório	Não	1 por tabela	Id da tabela
+FOREIGN KEY	Relacionamento entre tabelas	Sim (se não NOT NULL)	Várias	CategoriaId
+UNIQUE	Evitar valores duplicados	Sim (1 NULL)	Várias	Email, CPF
+NOT NULL	Campo obrigatório	Não	Várias	Nome
+CHECK	Validação personalizada	—	Várias	Idade >= 18
+DEFAULT	Valor automático se não informado	—	Várias	GETDATE(), 0
