@@ -104,25 +104,6 @@ Ao final do estudo, espera-se ter domínio sobre:
 
 ---
 
-## Organização do Repositório
-
-```text
-sql-server-estudos/
-│
-├── 01-fundamentos/
-├── 02-criacao-banco-dados/
-├── 03-tabelas-e-tipos-de-dados/
-├── 04-constraints/
-├── 05-manipulacao-dados/
-├── 06-consultas/
-├── 07-joins/
-├── 08-indices/
-├── 09-stored-procedures/
-├── 10-functions/
-├── 11-triggers/
-├── 12-seguranca/
-├── 13-performance/
-└── 14-avancado/
 Referências
 Documentação oficial do SQL Server (Microsoft)
 https://learn.microsoft.com/sql
