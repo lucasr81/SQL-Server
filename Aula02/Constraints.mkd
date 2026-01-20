@@ -23,3 +23,27 @@ CREATE TABLE Alunos (
 -- Ou adicionando depois (se a tabela já existir)
 ALTER TABLE Alunos
 ADD CONSTRAINT PK_Alunos PRIMARY KEY (Id);
+
+2. FOREIGN KEY (Chave Estrangeira)
+
+Estabelece relacionamento entre tabelas
+Garante que o valor exista na tabela referenciada
+Evita dados "órfãos" (ex.: registro filho sem pai)
+
+SQLCREATE TABLE Categorias (
+    Id INT PRIMARY KEY IDENTITY,
+    Nome VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Produtos (
+    Id INT PRIMARY KEY IDENTITY,
+    Nome VARCHAR(100) NOT NULL,
+    CategoriaId INT NOT NULL,
+    
+    CONSTRAINT FK_Produtos_Categorias 
+    FOREIGN KEY (CategoriaId) REFERENCES Categorias(Id)
+);
+Adicionando depois:
+SQLALTER TABLE Produtos
+ADD CONSTRAINT FK_Produtos_Categorias 
+FOREIGN KEY (CategoriaId) REFERENCES Categorias(Id);
