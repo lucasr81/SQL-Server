@@ -1,125 +1,165 @@
-# Constraints no SQL Server  
-### Guia prático e direto – sem enrolação
+# Constraints (Restrições) em Banco de Dados
 
-**Constraints (restrições)** são regras definidas em colunas ou tabelas para **garantir a integridade e a consistência dos dados**.
+## O que são Constraints?
 
-Elas funcionam como **“porteiros”**, impedindo a entrada de dados inválidos, duplicados ou inconsistentes com as regras do negócio.
+**Constraints** (ou **restrições**) são regras aplicadas às tabelas de um banco de dados para **garantir a integridade, consistência e confiabilidade dos dados** armazenados.
+
+Elas impedem que dados inválidos sejam inseridos, atualizados ou removidos do banco.
+
+Em SQL, as constraints são definidas geralmente **na criação da tabela** (`CREATE TABLE`) ou **após a criação** (`ALTER TABLE`).
 
 ---
 
-## Principais Tipos de Constraints
+## Principais tipos de Constraints
 
----
+### 1. NOT NULL
 
-## 1. PRIMARY KEY (Chave Primária)
+A constraint **NOT NULL** garante que uma coluna **não aceite valores nulos**.
 
-- Identifica **unicamente** cada registro
-- **Não permite** valores `NULL`
-- Apenas **uma** por tabela
-- Normalmente usada com `IDENTITY` (auto incremento)
+📌 Use quando o campo for obrigatório.
+
+**Exemplo:**
 
 ```sql
-CREATE TABLE Alunos (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    Nome VARCHAR(100) NOT NULL,
-    DataNascimento DATE
+CREATE TABLE Usuario (
+    id INT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL
 );
-sql
-Copiar código
-ALTER TABLE Alunos
-ADD CONSTRAINT PK_Alunos PRIMARY KEY (Id);
-2. FOREIGN KEY (Chave Estrangeira)
-Estabelece relacionamento entre tabelas
+```
 
-Garante que o valor exista na tabela referenciada
+➡️ O campo `nome` não pode ficar vazio.
 
-Evita dados órfãos
+---
 
-sql
-Copiar código
-CREATE TABLE Categorias (
-    Id INT PRIMARY KEY IDENTITY,
-    Nome VARCHAR(50) NOT NULL
+### 2. UNIQUE
+
+A constraint **UNIQUE** garante que os valores de uma coluna sejam **únicos**, ou seja, não podem se repetir.
+
+📌 Muito usada para e-mails, CPF, CNPJ, logins, etc.
+
+**Exemplo:**
+
+```sql
+CREATE TABLE Cliente (
+    id INT PRIMARY KEY,
+    email VARCHAR(150) UNIQUE
 );
-sql
-Copiar código
-CREATE TABLE Produtos (
-    Id INT PRIMARY KEY IDENTITY,
-    Nome VARCHAR(100) NOT NULL,
-    CategoriaId INT NOT NULL,
+```
 
-    CONSTRAINT FK_Produtos_Categorias
-    FOREIGN KEY (CategoriaId) REFERENCES Categorias(Id)
+➡️ Não será possível cadastrar dois clientes com o mesmo e-mail.
+
+---
+
+### 3. PRIMARY KEY
+
+A **PRIMARY KEY** identifica **unicamente cada registro** da tabela.
+
+📌 Características:
+
+* Não aceita `NULL`
+* Não permite valores duplicados
+* Cada tabela pode ter apenas **uma** chave primária
+
+**Exemplo:**
+
+```sql
+CREATE TABLE Produto (
+    id INT PRIMARY KEY,
+    nome VARCHAR(100)
 );
-sql
-Copiar código
-ALTER TABLE Produtos
-ADD CONSTRAINT FK_Produtos_Categorias
-FOREIGN KEY (CategoriaId) REFERENCES Categorias(Id);
-3. NOT NULL
-Campo obrigatório
+```
 
-Não aceita valores NULL
+➡️ O campo `id` identifica cada produto de forma única.
 
-sql
-Copiar código
-CREATE TABLE Clientes (
-    Id INT PRIMARY KEY IDENTITY,
-    Nome VARCHAR(100) NOT NULL,
-    Email VARCHAR(150),
-    DataCadastro DATE DEFAULT GETDATE()
+---
+
+### 4. FOREIGN KEY
+
+A **FOREIGN KEY** cria um relacionamento entre tabelas, garantindo a **integridade referencial**.
+
+📌 Um valor só pode existir se existir na tabela relacionada.
+
+**Exemplo:**
+
+```sql
+CREATE TABLE Pedido (
+    id INT PRIMARY KEY,
+    cliente_id INT,
+    FOREIGN KEY (cliente_id) REFERENCES Cliente(id)
 );
-4. UNIQUE
-Garante valores únicos
+```
 
-Permite apenas um NULL
+➡️ O `cliente_id` só pode conter IDs que existam na tabela `Cliente`.
 
-Pode ser usado em uma ou mais colunas
+---
 
-sql
-Copiar código
-CREATE TABLE Usuarios (
-    Id INT PRIMARY KEY IDENTITY,
-    Email VARCHAR(150) UNIQUE,
-    CPF CHAR(11) UNIQUE
+### 5. CHECK
+
+A constraint **CHECK** valida valores com base em uma condição lógica.
+
+📌 Útil para limitar faixas de valores.
+
+**Exemplo:**
+
+```sql
+CREATE TABLE Funcionario (
+    id INT PRIMARY KEY,
+    salario DECIMAL(10,2),
+    CHECK (salario > 0)
 );
-sql
-Copiar código
-ALTER TABLE Pedidos
-ADD CONSTRAINT UK_Pedido_Cliente_Data
-UNIQUE (ClienteId, DataPedido);
-5. CHECK
-Validação personalizada
+```
 
-sql
-Copiar código
-CREATE TABLE Funcionarios (
-    Id INT PRIMARY KEY IDENTITY,
-    Nome VARCHAR(100) NOT NULL,
-    Salario DECIMAL(10,2),
-    Idade INT,
+➡️ O salário deve ser maior que zero.
 
-    CONSTRAINT CHK_Salario_Positive CHECK (Salario > 0),
-    CONSTRAINT CHK_Idade_Adulto CHECK (Idade >= 18),
-    CONSTRAINT CHK_Nome_Nao_Vazio CHECK (LEN(TRIM(Nome)) > 0)
+---
+
+### 6. DEFAULT
+
+A constraint **DEFAULT** define um valor padrão quando nenhum valor é informado.
+
+📌 Evita campos vazios desnecessários.
+
+**Exemplo:**
+
+```sql
+CREATE TABLE Usuario (
+    id INT PRIMARY KEY,
+    ativo BOOLEAN DEFAULT TRUE
 );
-6. DEFAULT
-Valor padrão quando não informado
+```
 
-sql
-Copiar código
-CREATE TABLE Tarefas (
-    Id INT PRIMARY KEY IDENTITY,
-    Descricao VARCHAR(500) NOT NULL,
-    DataCriacao DATETIME NOT NULL DEFAULT GETDATE(),
-    Concluida BIT NOT NULL DEFAULT 0,
-    Prioridade INT NOT NULL DEFAULT 3
-);
-Resumo Rápido – Comparação de Constraints
-Constraint	Objetivo principal	Permite NULL?	Quantidade típica	Exemplo comum
-PRIMARY KEY	Identificador único e obrigatório	Não	1 por tabela	Id da tabela
-FOREIGN KEY	Relacionamento entre tabelas	Sim (se não NOT NULL)	Várias	CategoriaId
-UNIQUE	Evitar valores duplicados	Sim (1 NULL)	Várias	Email, CPF
-NOT NULL	Campo obrigatório	Não	Várias	Nome
-CHECK	Validação personalizada	—	Várias	Idade >= 18
-DEFAULT	Valor automático se não informado	—	Várias	GETDATE(), 0
+➡️ Se não informar, o campo `ativo` será `TRUE`.
+
+---
+
+## Criando Constraints com ALTER TABLE
+
+Também é possível adicionar constraints **após a criação da tabela**.
+
+**Exemplo:**
+
+```sql
+ALTER TABLE Cliente
+ADD CONSTRAINT uq_email UNIQUE (email);
+```
+
+---
+
+## Resumo das Constraints
+
+| Constraint  | Função                              |
+| ----------- | ----------------------------------- |
+| NOT NULL    | Impede valores nulos                |
+| UNIQUE      | Impede valores duplicados           |
+| PRIMARY KEY | Identifica registros de forma única |
+| FOREIGN KEY | Cria relacionamento entre tabelas   |
+| CHECK       | Valida condições                    |
+| DEFAULT     | Define valor padrão                 |
+
+---
+
+## Conclusão
+
+As constraints são fundamentais para manter um banco de dados **seguro, organizado e confiável**. Elas evitam erros comuns e garantem que as regras do negócio sejam respeitadas diretamente no banco de dados.
+
+📌 Sempre que possível, utilize constraints em vez de depender apenas da validação no código da aplicação.
