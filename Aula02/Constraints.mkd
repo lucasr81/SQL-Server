@@ -158,8 +158,3 @@ ADD CONSTRAINT uq_email UNIQUE (email);
 
 ---
 
-## Conclusão
-
-As constraints são fundamentais para manter um banco de dados **seguro, organizado e confiável**. Elas evitam erros comuns e garantem que as regras do negócio sejam respeitadas diretamente no banco de dados.
-
-📌 Sempre que possível, utilize constraints em vez de depender apenas da validação no código da aplicação.

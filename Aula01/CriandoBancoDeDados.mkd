@@ -153,6 +153,3 @@ Apagar à força:       ALTER DATABASE ... SET SINGLE_USER WITH ROLLBACK IMMEDIA
 
 ---
 
-## Conclusão
-
-Esta é a base para trabalhar com SQL Server. Com esses comandos, você já consegue **criar, acessar, inspecionar e remover bancos de dados**, mantendo controle e organização desde o início.

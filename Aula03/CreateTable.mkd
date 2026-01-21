@@ -194,8 +194,5 @@ FROM Biblioteca.sys.tables;
 
 ---
 
-## Conclusão
-
-Nesta aula, estruturamos um banco de dados completo utilizando **CREATE TABLE**, aplicamos **constraints corretamente** e entendemos como funciona a **modelagem relacional**.
 
 
