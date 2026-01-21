@@ -1,0 +1,201 @@
+# CREATE TABLE, Constraints e Modelagem de Dados
+
+## Banco de Dados Biblioteca – Aula Prática
+
+Nesta aula, vamos **estruturar um banco de dados completo**, criando tabelas, definindo tipos de dados, aplicando **constraints** e entendendo o **relacionamento entre as tabelas** por meio do diagrama lógico.
+
+Mesmo já tendo visto como criar um banco de dados anteriormente, vamos **relembrar a criação via código**, pois este banco será utilizado ao longo do curso.
+
+---
+
+## 1. Criando o banco de dados do curso
+
+Aqui criamos o banco **Biblioteca**, definindo arquivos de dados, log e regras de crescimento.
+
+```sql
+CREATE DATABASE Biblioteca
+ON PRIMARY(
+    NAME = Biblioteca,
+    FILENAME = 'C:\SQL\Biblioteca.mdf',
+    SIZE = 8MB,
+    MAXSIZE = 15MB,
+    FILEGROWTH = 10%
+)
+LOG ON(
+    NAME = Biblioteca_log,
+    FILENAME = 'C:\SQL\Biblioteca.ldf',
+    SIZE = 1MB,
+    FILEGROWTH = 1MB
+);
+GO
+
+USE Biblioteca;
+```
+
+📌 Este banco será a base de dados oficial usada durante as aulas.
+
+---
+
+## 2. Estratégia de criação das tabelas
+
+Antes de sair criando tudo de uma vez, seguimos uma **boa prática**:
+
+1. Criar primeiro as tabelas **sem chave estrangeira**
+2. Depois criar as tabelas que **dependem de outras**
+3. Por último, criar **tabelas associativas** (N:N)
+
+Isso evita erros de integridade referencial.
+
+---
+
+## 3. Tabelas sem chave estrangeira
+
+### 3.1 Tabela Autor
+
+Armazena os autores dos livros.
+
+```sql
+CREATE TABLE Autor(
+    IdAutor SMALLINT IDENTITY,
+    NomeAutor VARCHAR(50) NOT NULL,
+    SobreNomeAutor VARCHAR(60) NOT NULL,
+    CONSTRAINT pk_id_autor PRIMARY KEY(IdAutor)
+);
+```
+
+📌 Destaques:
+
+* `IDENTITY`: gera o ID automaticamente
+* `NOT NULL`: campos obrigatórios
+* `PRIMARY KEY`: identifica o autor de forma única
+
+---
+
+### 3.2 Tabela Editora
+
+Armazena as editoras responsáveis pelas publicações.
+
+```sql
+CREATE TABLE Editora(
+    IdEditora SMALLINT PRIMARY KEY IDENTITY,
+    NomeEditora VARCHAR(50) NOT NULL
+);
+```
+
+---
+
+### 3.3 Tabela Assunto
+
+Define os assuntos ou categorias dos livros.
+
+```sql
+CREATE TABLE Assunto(
+    IdAssunto TINYINT PRIMARY KEY IDENTITY,
+    NomeAssunto VARCHAR(25) NOT NULL
+);
+```
+
+📌 Note o uso do `TINYINT`, ideal para tabelas pequenas e controladas.
+
+---
+
+## 4. Tabela com chaves estrangeiras
+
+### 4.1 Tabela Livro
+
+A tabela **Livro** é o coração do sistema. Ela se relaciona com **Editora** e **Assunto**.
+
+```sql
+CREATE TABLE Livro(
+    IdLivro SMALLINT PRIMARY KEY IDENTITY,
+    NomeLivro VARCHAR(70) NOT NULL,
+    ISBN13 CHAR(13) UNIQUE NOT NULL,
+    DataPub DATE,
+    PrecoLivro MONEY NOT NULL,
+    NumeroPaginas SMALLINT NOT NULL,
+    IdEditora SMALLINT NOT NULL,
+    IdAssunto TINYINT NOT NULL,
+
+    CONSTRAINT fk_id_editora FOREIGN KEY(IdEditora)
+        REFERENCES Editora(IdEditora) ON DELETE CASCADE,
+
+    CONSTRAINT fk_id_assunto FOREIGN KEY(IdAssunto)
+        REFERENCES Assunto(IdAssunto) ON DELETE CASCADE,
+
+    CONSTRAINT verifica_preco CHECK(PrecoLivro >= 0)
+);
+```
+
+📌 Constraints utilizadas:
+
+* `PRIMARY KEY`: identifica o livro
+* `UNIQUE`: garante ISBN único
+* `FOREIGN KEY`: mantém integridade referencial
+* `CHECK`: impede preços negativos
+* `ON DELETE CASCADE`: remove livros se a editora ou assunto for apagado
+
+---
+
+## 5. Tabela associativa (Relacionamento N:N)
+
+### 5.1 Tabela LivroAutor
+
+Um livro pode ter **vários autores** e um autor pode escrever **vários livros**.
+
+```sql
+CREATE TABLE LivroAutor(
+    IdLivro SMALLINT NOT NULL,
+    IdAutor SMALLINT NOT NULL,
+
+    CONSTRAINT fk_id_livros FOREIGN KEY(IdLivro)
+        REFERENCES Livro(IdLivro),
+
+    CONSTRAINT fk_id_autores FOREIGN KEY(IdAutor)
+        REFERENCES Autor(IdAutor),
+
+    CONSTRAINT pk_livro_autor PRIMARY KEY(IdLivro, IdAutor)
+);
+```
+
+📌 Aqui temos:
+
+* Chave primária composta
+* Duas chaves estrangeiras
+* Implementação clássica de relacionamento muitos-para-muitos
+
+---
+
+## 6. Diagrama lógico das tabelas
+
+> 📷 **<img src="diagrama.JPG" alt="Minha imagem legal" />**
+
+Relacionamentos:
+
+* **Editora (1) → (N) Livro**
+* **Assunto (1) → (N) Livro**
+* **Livro (N) ↔ (N) Autor** (via LivroAutor)
+
+O diagrama ajuda a visualizar:
+
+* Dependência entre tabelas
+* Chaves primárias e estrangeiras
+* Estrutura geral do banco
+
+---
+
+## 7. Verificando as tabelas criadas
+
+Para listar todas as tabelas do banco:
+
+```sql
+SELECT name
+FROM Biblioteca.sys.tables;
+```
+
+---
+
+## Conclusão
+
+Nesta aula, estruturamos um banco de dados completo utilizando **CREATE TABLE**, aplicamos **constraints corretamente** e entendemos como funciona a **modelagem relacional**.
+
+
