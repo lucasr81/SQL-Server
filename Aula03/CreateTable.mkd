@@ -167,7 +167,7 @@ CREATE TABLE LivroAutor(
 
 ## 6. Diagrama lógico das tabelas
 
-> 📷 **<img src="diagrama.JPG" alt="Minha imagem legal" />**
+> 📷 <img src="diagrama.JPG" alt="Minha imagem legal" />
 
 Relacionamentos:
 
