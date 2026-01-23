@@ -1,0 +1,179 @@
+# ALTER TABLE, DROP e RENAME
+
+## Gerenciamento de Tabelas no SQL Server
+
+Nesta aula, vamos aprender como **alterar, excluir e renomear tabelas** no SQL Server. Esses comandos são muito usados no dia a dia, principalmente quando o banco já existe e precisa de **ajustes ou manutenção**.
+
+Vamos focar nos comandos:
+
+* `ALTER TABLE`
+* `DROP TABLE`
+* `sp_rename`
+
+Sempre com exemplos práticos.
+
+---
+
+## 1. Conceito geral: ALTER TABLE
+
+O comando `ALTER TABLE` é usado para **modificar a estrutura de uma tabela existente**, sem precisar apagá-la.
+
+Sintaxe geral:
+
+```sql
+ALTER TABLE NomeTabela
+ADD | ALTER | DROP Objeto;
+```
+
+Com ele, podemos:
+
+* Adicionar colunas
+* Alterar tipos de dados
+* Remover colunas
+* Adicionar ou remover constraints
+
+---
+
+## 2. Adicionando uma nova coluna
+
+Vamos adicionar uma coluna de teste chamada **Edição** na tabela `Livro`.
+
+```sql
+ALTER TABLE Livro
+ADD Edicao SMALLINT;
+```
+
+ A coluna será criada:
+
+* No final da tabela
+* Permitindo `NULL` por padrão (se não for especificado `NOT NULL`)
+
+---
+
+## 3. Alterando o tipo de dado de uma coluna
+
+Caso a coluna tenha sido criada com um tipo inadequado, podemos alterá-la.
+
+```sql
+ALTER TABLE Livro
+ALTER COLUMN Edicao TINYINT;
+```
+
+⚠️ Atenção:
+
+* A alteração só funciona se os dados existentes forem compatíveis
+* Caso contrário, o SQL Server retornará erro
+
+---
+
+## 4. Adicionando uma chave primária com ALTER TABLE
+
+Também é possível criar uma **PRIMARY KEY** após a tabela já existir.
+
+```sql
+ALTER TABLE NomeTabela
+ADD CONSTRAINT pk_nome PRIMARY KEY (Coluna);
+```
+
+ Boa prática: sempre nomear a constraint.
+
+---
+
+## 5. Excluindo uma constraint
+
+Para remover uma constraint, primeiro precisamos saber o **nome dela**.
+
+### 5.1 Descobrindo o nome das constraints
+
+```sql
+sp_help Livro;
+```
+
+Esse comando mostra:
+
+* Colunas
+* Tipos de dados
+* Constraints
+* Chaves primárias e estrangeiras
+
+---
+
+### 5.2 Removendo a constraint
+
+```sql
+ALTER TABLE NomeTabela
+DROP CONSTRAINT NomeConstraint;
+```
+
+ Muito usado para remover:
+
+* `CHECK`
+* `UNIQUE`
+* `FOREIGN KEY`
+
+---
+
+## 6. Excluindo uma coluna de uma tabela
+
+Se uma coluna não for mais necessária, podemos removê-la.
+
+```sql
+ALTER TABLE Livro
+DROP COLUMN Edicao;
+```
+
+⚠️ Cuidado:
+
+* A exclusão é definitiva
+* Dados dessa coluna serão perdidos
+
+---
+
+## 7. Excluindo uma tabela inteira
+
+Para apagar completamente uma tabela do banco:
+
+```sql
+DROP TABLE NomeTabela;
+```
+
+ Observações importantes:
+
+* A tabela é removida permanentemente
+* Se houver relacionamento com outras tabelas, pode ocorrer erro
+
+---
+
+## 8. Renomeando uma tabela
+
+O SQL Server usa a procedure `sp_rename` para renomear objetos.
+
+```sql
+sp_rename 'Livro', 'Livros';
+```
+
+ Isso altera apenas o nome da tabela, não os dados.
+
+⚠️ Atenção:
+
+* Stored procedures, views e código da aplicação podem quebrar
+* Use com cuidado em ambientes de produção
+
+---
+
+## Resumo 
+
+```text
+Adicionar coluna:      ALTER TABLE ADD
+Alterar coluna:        ALTER TABLE ALTER COLUMN
+Excluir coluna:        ALTER TABLE DROP COLUMN
+Excluir constraint:    ALTER TABLE DROP CONSTRAINT
+Excluir tabela:        DROP TABLE
+Renomear tabela:       sp_rename
+```
+
+---
+
+Os comandos de gerenciamento de tabelas permitem **evoluir o banco de dados sem recriá-lo do zero**. Saber usar corretamente `ALTER TABLE`, `DROP` e `sp_rename` é essencial para manutenção, correção de erros e adaptação às regras do negócio.
+
+📌 Sempre revise bem antes de executar comandos destrutivos, principalmente em produção.
