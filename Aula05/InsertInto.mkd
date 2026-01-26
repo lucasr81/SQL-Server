@@ -1,0 +1,238 @@
+# INSERT INTO – Inserção de Dados
+
+## Banco Biblioteca – Aula Prática
+
+Nesta aula, vamos aprender a **inserir dados nas tabelas** do banco de dados **Biblioteca** usando o comando `INSERT INTO`.
+
+📌 **Importante**: nesta aula **o foco NÃO é INNER JOIN** ou consultas complexas. A ideia aqui é **popular o banco**, entender a ordem correta de inserção e validar os dados inseridos com `SELECT`.
+
+As consultas com `JOIN` serão trabalhadas em aulas futuras.
+
+---
+
+## 1. Conceito do INSERT INTO
+
+O comando `INSERT INTO` é usado para **adicionar registros (linhas)** em uma tabela.
+
+Sintaxe básica:
+
+```sql
+INSERT INTO NomeTabela (Coluna1, Coluna2, ...)
+VALUES (Valor1, Valor2, ...);
+```
+
+📌 Boas práticas:
+
+* Sempre informe o nome das colunas
+* Respeite a ordem e o tipo dos dados
+* Insira primeiro tabelas **sem chave estrangeira**
+
+---
+
+## 2. Ordem correta de inserção dos dados
+
+Como o banco possui relacionamentos, seguimos esta ordem:
+
+1. Tabelas **sem chave estrangeira** (`Assunto`, `Editora`, `Autor`)
+2. Tabela **Livro** (depende de Assunto e Editora)
+3. Tabela **LivroAutor** (depende de Livro e Autor)
+
+Isso evita erros de **FOREIGN KEY**.
+
+---
+
+## 3. Inserindo dados na tabela Assunto
+
+```sql
+INSERT INTO Assunto (NomeAssunto)
+VALUES
+('Ficção científica'), ('Botânico'),
+('Eletrônica'), ('Matemática'),
+('Aventura'), ('Romance'),
+('Finanças'), ('Gastronomia'),
+('Terror'), ('Administração'),
+('Informática'), ('Suspense');
+```
+
+### Verificação
+
+```sql
+SELECT * FROM Assunto;
+```
+
+---
+
+## 4. Inserindo dados na tabela Editora
+
+### 4.1 Inserção inicial
+
+```sql
+INSERT INTO Editora (NomeEditora)
+VALUES
+('Prentice Hall'), ('O''Reilly');
+```
+
+### Verificação
+
+```sql
+SELECT * FROM Editora;
+```
+
+---
+
+### 4.2 Inserindo várias editoras
+
+```sql
+INSERT INTO Editora (NomeEditora)
+VALUES
+('Aleph'), ('Microsoft Press'), ('Wiley'), ('HarperCollins'),
+('Érica'), ('Novatec'), ('McGraw-Hill'), ('Apress'),
+('Francisco Alves'), ('Sybex'), ('Globo'), ('Companhia das Letras'),
+('Morro Branco'), ('Penguin Books'), ('Martin Claret'), ('Record'),
+('Springer'), ('Melhoramento'), ('Oxford'), ('Taschen'),
+('Ediouro'), ('Bookman');
+```
+
+### Verificação
+
+```sql
+SELECT * FROM Editora;
+```
+
+---
+
+## 5. Inserindo dados na tabela Autor
+
+### 5.1 Inserindo um único registro
+
+```sql
+INSERT INTO Autor (NomeAutor, SobreNomeAutor)
+VALUES ('Umberto', 'Eco');
+```
+
+### Verificação
+
+```sql
+SELECT * FROM Autor;
+```
+
+---
+
+### 5.2 Inserindo múltiplos registros
+
+```sql
+INSERT INTO Autor (NomeAutor, SobreNomeAutor)
+VALUES
+('Daniel', 'Barrete'), ('Gerard', 'Carter'), ('Mark', 'Sobell'),
+('William', 'Stanek'), ('Christine', 'Bresnahan'), ('William', 'Gibson'),
+('James', 'Joyce'), ('John', 'Emsley'), ('José', 'Saramago'),
+('Richard', 'Silverman'), ('Robert', 'Byrnes'), ('Jay', 'Ts'),
+('Robert', 'Eckstein'), ('Paul', 'Horowitz'), ('Winfield', 'Hill'),
+('Joel', 'Murach'), ('Paul', 'Scherz'), ('Simon', 'Monk'),
+('George', 'Orwell'), ('Italo', 'Calvino'), ('Machado', 'de Assis'),
+('Oliver', 'Sacks'), ('Ray', 'Bradbury'), ('Walter', 'Isaacson'),
+('Benjamin', 'Graham'), ('Julio', 'Verne'), ('Marcelo', 'Gleiser'),
+('Harri', 'Lorenzi'), ('Humphrey', 'Carpenter'), ('Isaac', 'Asimov'),
+('Aldous', 'Huxley'), ('Arthur', 'Conan Doyle'), ('Blaise', 'Pascal'),
+('Jostein', 'Gaarder'), ('Stephen', 'Hawking'), ('Stephen', 'Jay Gould'),
+('Neil', 'DeGrasse Tyson'), ('Charles', 'Darwin'), ('Alan', 'Turing'),
+('Arthur', 'C Clarke');
+```
+
+### Verificação
+
+```sql
+SELECT * FROM Autor;
+```
+
+---
+
+## 6. Inserindo dados na tabela Livro
+
+```sql
+INSERT INTO Livro
+(NomeLivro, ISBN13, DataPub, PrecoLivro, NumeroPaginas, IdAssunto, IdEditora)
+VALUES
+('A Arte da Eletrônica', '9788582604342', '2017-03-08', 300.74, 1160, 3, 24);
+```
+
+### Verificação
+
+```sql
+SELECT * FROM Livro;
+```
+
+---
+
+### Inserindo mais livros
+
+```sql
+INSERT INTO Livro
+(NomeLivro, ISBN13, DataPub, PrecoLivro, NumeroPaginas, IdAssunto, IdEditora)
+VALUES
+('Vinte Mil Léguas Submarinas', '9788582850022', '2014-09-16', 24.50, 448, 1, 16),
+('O Investidor Inteligente', '9788595080805', '2016-01-05', 79.90, 450, 7, 6);
+```
+
+---
+
+## 7. Inserção em lote (Bulk Insert via CSV)
+
+Também é possível inserir dados em massa a partir de arquivos externos.
+
+```sql
+INSERT INTO Livro
+(NomeLivro, ISBN13, DataPub, PrecoLivro, NumeroPaginas, IdEditora, IdAssunto)
+SELECT
+    NomeLivro, ISBN13, DataPub, PrecoLivro, NumeroPaginas, IdEditora, IdAssunto
+FROM OPENROWSET(
+    BULK 'C:\SQL\Livros.csv',
+    FORMATFILE = 'C:\SQL\Formato.xml',
+    CODEPAGE = '65001',
+    FIRSTROW = 2
+) AS LivrosCSV;
+```
+
+📌 Esse método é muito usado em migração e carga inicial de dados.
+
+---
+
+## 8. Inserindo dados na tabela LivroAutor
+
+A tabela `LivroAutor` representa um relacionamento **N:N**.
+
+```sql
+INSERT INTO LivroAutor (IdLivro, IdAutor)
+VALUES
+(100,15), (100,16), (101,27), (102,27), (103,41),
+(104,24), (105,32), (106,20), (107,27), (108,1),
+(109,22), (110,10), (111,21), (112,5), (113,10),
+(114,8), (115,18), (116,19), (117,31);
+```
+
+### Verificação simples
+
+```sql
+SELECT * FROM LivroAutor;
+```
+
+---
+
+## Observação sobre INNER JOIN
+
+Nesta aula, o `INNER JOIN` **não é o foco**. Ele foi utilizado apenas para **verificação dos dados relacionados**.
+
+O estudo detalhado de `JOIN` será feito em aulas futuras.
+
+---
+
+
+Nesta aula, aprendemos a:
+
+* Usar o comando `INSERT INTO`
+* Inserir um ou vários registros
+* Popular tabelas respeitando chaves estrangeiras
+* Inserir dados em lote a partir de arquivos externos
+* Validar os dados usando `SELECT`
+
+📌 Um banco bem modelado só faz sentido quando está corretamente populado.
