@@ -1,0 +1,202 @@
+# 📘 Aula SQL — Consultas Simples com SELECT
+
+Nesta aula você aprenderá a realizar **consultas simples** em SQL utilizando a cláusula `SELECT`, além de ordenar resultados com `ORDER BY` e criar tabelas a partir de consultas usando `SELECT INTO`.
+
+---
+
+## 🔹 Sintaxe Básica do SELECT
+
+```sql
+SELECT coluna(s)
+FROM tabela;
+```
+
+* `SELECT`: define quais colunas serão retornadas
+* `FROM`: define de qual tabela os dados serão buscados
+
+---
+
+##  Consultas Simples
+
+###  Retornar os nomes dos livros
+
+```sql
+SELECT NomeLivro
+FROM Livro;
+```
+
+---
+
+### Retornar o sobrenome dos autores
+
+```sql
+SELECT SobreNomeAutor
+FROM Autor;
+```
+
+---
+
+###  Retornar todas as colunas usando `*`
+
+```sql
+SELECT *
+FROM Autor;
+```
+
+⚠️ **Atenção:** O uso de `*` é recomendado apenas para testes ou estudos. Em sistemas reais, prefira informar as colunas explicitamente.
+
+---
+
+###  Retornar nome, preço e ISBN dos livros
+
+```sql
+SELECT NomeLivro, PrecoLivro, ISBN13
+FROM Livro;
+```
+
+---
+
+##  Evitando Registros Duplicados com DISTINCT
+
+###  Retornar IDs de editoras sem repetição
+
+```sql
+SELECT DISTINCT IdEditora
+FROM Livro;
+```
+
+`DISTINCT` elimina valores duplicados no resultado da consulta.
+
+---
+
+##  Ordenando Resultados com ORDER BY
+
+###  Ordenar livros pelo nome
+
+```sql
+SELECT NomeLivro
+FROM Livro
+ORDER BY NomeLivro;
+```
+
+Por padrão, o `ORDER BY` ordena de forma **crescente (ASC)**.
+
+---
+
+## SELECT INTO — Criando Tabelas a partir de Consultas
+
+O comando `SELECT INTO` cria uma **nova tabela** com base nos dados de outra tabela.
+
+###  Sintaxe
+
+```sql
+SELECT coluna(s)
+INTO nova_tabela
+FROM tabela_atual;
+```
+
+---
+
+###  Criando a tabela `LivroISBN`
+
+```sql
+SELECT NomeLivro, ISBN13
+INTO LivroISBN
+FROM Livro;
+```
+
+###  Verificando os dados
+
+```sql
+SELECT *
+FROM LivroISBN;
+```
+
+###  Excluindo a tabela criada
+
+```sql
+DROP TABLE LivroISBN;
+```
+
+---
+
+##  Exercícios
+
+### 1️⃣ Retornar nomes dos livros, preço e data de publicação
+
+```sql
+SELECT NomeLivro, PrecoLivro, DataPub
+FROM Livro;
+```
+
+---
+
+### 2️⃣ Mostrar apenas o sobrenome dos autores
+
+```sql
+SELECT SobreNomeAutor
+FROM Autor;
+```
+
+---
+
+### 3️⃣ Retornar a lista de assuntos
+
+```sql
+SELECT NomeAssunto
+FROM Assunto;
+```
+
+---
+
+### 4️⃣ Mostrar nome da editora e seu ID
+
+```sql
+SELECT NomeEditora, IdEditora
+FROM Editora;
+```
+
+---
+
+### 5️⃣ Mostrar os IDs de assuntos existentes em livros (sem repetição)
+
+```sql
+SELECT DISTINCT IdAssunto
+FROM Livro;
+```
+
+---
+
+### 6️⃣ Criar a tabela `LivroFiccao` com livros do assunto ID = 1
+
+```sql
+SELECT *
+INTO LivroFiccao
+FROM Livro
+WHERE IdAssunto = 1;
+```
+
+###  Consultar a nova tabela
+
+```sql
+SELECT *
+FROM LivroFiccao;
+```
+
+###  Excluir a tabela criada
+
+```sql
+DROP TABLE LivroFiccao;
+```
+
+---
+
+
+
+* `SELECT` consulta dados de tabelas
+* `DISTINCT` remove duplicações
+* `ORDER BY` organiza os resultados
+* `SELECT INTO` cria novas tabelas
+* `DROP TABLE` remove tabelas do banco
+
+
