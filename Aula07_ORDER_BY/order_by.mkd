@@ -1,0 +1,92 @@
+ O que é o ORDER BY?
+
+A cláusula ORDER BY define a ordem em que os registros serão exibidos no resultado da consulta.
+
+ Por padrão, a ordenação é crescente (ASC)
+ Quando necessário, podemos usar decrescente (DESC)
+
+ Sintaxe Básica
+SELECT coluna(s)
+FROM tabela
+ORDER BY coluna_a_ordenar [ASC | DESC];
+
+
+ASC → ordem crescente (padrão)
+
+DESC → ordem decrescente
+
+Se nada for informado, o SQL usa ASC.
+
+ Exemplos Práticos
+ 1. Ordenar todos os livros pelo nome
+SELECT *
+FROM Livro
+ORDER BY NomeLivro;
+
+
+ Resultado:
+Os livros serão exibidos em ordem alfabética (A → Z).
+
+ 2. Ordenar livros pelo ID da editora
+SELECT NomeLivro, IdEditora
+FROM Livro
+ORDER BY IdEditora;
+
+
+ Resultado:
+Os livros aparecem organizados conforme o ID da editora, em ordem crescente.
+
+ 3. Ordenar livros pelo preço (do maior para o menor)
+SELECT NomeLivro, PrecoLivro
+FROM Livro
+ORDER BY PrecoLivro DESC;
+
+
+ Resultado:
+Os livros mais caros aparecem primeiro.
+
+ 4. Ordenar por mais de uma coluna (ordem crescente)
+SELECT NomeLivro, PrecoLivro, IdEditora
+FROM Livro
+ORDER BY IdEditora, PrecoLivro ASC;
+
+
+ Resultado:
+
+Primeiro ordena pelo IdEditora
+
+Dentro de cada editora, ordena pelo preço do livro (menor → maior)
+
+ 5. Ordenar por múltiplas colunas com regras diferentes
+SELECT NomeLivro, PrecoLivro, IdEditora
+FROM Livro
+ORDER BY IdEditora ASC, PrecoLivro DESC;
+
+
+Resultado:
+
+Editoras em ordem crescente
+
+Dentro de cada editora, os livros aparecem do mais caro para o mais barato
+
+⚠️ Observações Importantes
+
+O ORDER BY sempre vem por último na consulta
+
+Pode ordenar por colunas que não estão no SELECT (embora não seja recomendado em aulas iniciais)
+
+Pode ordenar por mais de uma coluna, separando por vírgula
+
+
+
+ORDER BY organiza os resultados da consulta
+
+ASC → crescente (padrão)
+
+DESC → decrescente
+
+É possível ordenar por uma ou várias colunas
+
+Essencial para relatórios e visualização de dados
+
+👉 Na próxima aula, o passo natural é aprender filtros com WHERE, para buscar apenas os dados desejados 🎯
