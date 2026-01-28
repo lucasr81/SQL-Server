@@ -1,92 +1,91 @@
- O que é o ORDER BY?
+# 📘 Aula – Ordenação de Resultados em Consultas SQL (ORDER BY)
 
-A cláusula ORDER BY define a ordem em que os registros serão exibidos no resultado da consulta.
+Nesta aula vamos aprender a ordenar os resultados de consultas SQL, organizando os dados de forma clara e lógica.
+A ordenação é muito utilizada em relatórios, listas de dados e telas de sistemas.
 
- Por padrão, a ordenação é crescente (ASC)
- Quando necessário, podemos usar decrescente (DESC)
+##  Objetivo da Aula
 
- Sintaxe Básica
-SELECT coluna(s)
-FROM tabela
+- Entender para que serve a cláusula ORDER BY
+- Utilizar ordenação crescente (ASC) e decrescente (DESC)
+- Ordenar resultados por uma ou mais colunas
+- Aplicar a ordenação em consultas simples com SELECT
+
+##  O que é o ORDER BY
+
+A cláusula ORDER BY define a ordem em que os registros serão exibidos no resultado de uma consulta SQL.
+
+ASC → ordem crescente (padrão)  
+DESC → ordem decrescente  
+
+Quando nenhuma opção é informada, o SQL utiliza automaticamente ASC.
+
+##  Sintaxe Básica
+
+SELECT coluna(s)  
+FROM tabela  
 ORDER BY coluna_a_ordenar [ASC | DESC];
 
+##  Exemplos Práticos
 
-ASC → ordem crescente (padrão)
+### 1. Ordenar todos os livros pelo nome
 
-DESC → ordem decrescente
-
-Se nada for informado, o SQL usa ASC.
-
- Exemplos Práticos
- 1. Ordenar todos os livros pelo nome
-SELECT *
-FROM Livro
+SELECT *  
+FROM Livro  
 ORDER BY NomeLivro;
 
-
- Resultado:
+Resultado:  
 Os livros serão exibidos em ordem alfabética (A → Z).
 
- 2. Ordenar livros pelo ID da editora
-SELECT NomeLivro, IdEditora
-FROM Livro
+### 2. Ordenar livros pelo ID da editora
+
+SELECT NomeLivro, IdEditora  
+FROM Livro  
 ORDER BY IdEditora;
 
+Resultado:  
+Os livros ficam organizados conforme o ID da editora, em ordem crescente.
 
- Resultado:
-Os livros aparecem organizados conforme o ID da editora, em ordem crescente.
+### 3. Ordenar livros pelo preço (do maior para o menor)
 
- 3. Ordenar livros pelo preço (do maior para o menor)
-SELECT NomeLivro, PrecoLivro
-FROM Livro
+SELECT NomeLivro, PrecoLivro  
+FROM Livro  
 ORDER BY PrecoLivro DESC;
 
-
- Resultado:
+Resultado:  
 Os livros mais caros aparecem primeiro.
 
- 4. Ordenar por mais de uma coluna (ordem crescente)
-SELECT NomeLivro, PrecoLivro, IdEditora
-FROM Livro
+### 4. Ordenar por mais de uma coluna (ordem crescente)
+
+SELECT NomeLivro, PrecoLivro, IdEditora  
+FROM Livro  
 ORDER BY IdEditora, PrecoLivro ASC;
 
+Ordem aplicada:
+1. Primeiro pelo IdEditora
+2. Depois pelo Preço do Livro (menor para maior)
 
- Resultado:
+### 5. Ordenar por múltiplas colunas com regras diferentes
 
-Primeiro ordena pelo IdEditora
-
-Dentro de cada editora, ordena pelo preço do livro (menor → maior)
-
- 5. Ordenar por múltiplas colunas com regras diferentes
-SELECT NomeLivro, PrecoLivro, IdEditora
-FROM Livro
+SELECT NomeLivro, PrecoLivro, IdEditora  
+FROM Livro  
 ORDER BY IdEditora ASC, PrecoLivro DESC;
 
+Ordem aplicada:
+- Editoras em ordem crescente
+- Dentro de cada editora, livros do mais caro para o mais barato
 
-Resultado:
+## ⚠️ Observações Importantes
 
-Editoras em ordem crescente
+- ORDER BY sempre deve ser a última cláusula da consulta
+- É possível ordenar por uma ou várias colunas
+- Cada coluna pode ter sua própria regra (ASC ou DESC)
 
-Dentro de cada editora, os livros aparecem do mais caro para o mais barato
+## 
 
-⚠️ Observações Importantes
-
-O ORDER BY sempre vem por último na consulta
-
-Pode ordenar por colunas que não estão no SELECT (embora não seja recomendado em aulas iniciais)
-
-Pode ordenar por mais de uma coluna, separando por vírgula
+- ORDER BY organiza os resultados das consultas
+- ASC é a ordenação padrão
+- DESC inverte a ordem
+- Pode ser usado com múltiplas colunas
+- Essencial para relatórios e visualização de dados
 
 
-
-ORDER BY organiza os resultados da consulta
-
-ASC → crescente (padrão)
-
-DESC → decrescente
-
-É possível ordenar por uma ou várias colunas
-
-Essencial para relatórios e visualização de dados
-
-👉 Na próxima aula, o passo natural é aprender filtros com WHERE, para buscar apenas os dados desejados 🎯
