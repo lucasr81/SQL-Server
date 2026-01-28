@@ -1,33 +1,34 @@
-# 📘 Aula – Ordenação de Resultados em Consultas SQL (ORDER BY)
+# 📘 Aula SQL — Ordenação de Resultados em Consultas SQL (ORDER BY)
 
-Nesta aula vamos aprender a ordenar os resultados de consultas SQL, organizando os dados de forma clara e lógica.
-A ordenação é muito utilizada em relatórios, listas de dados e telas de sistemas.
+Nesta aula você aprenderá a ordenar os resultados de consultas SQL utilizando a cláusula ORDER BY.
+A ordenação é essencial para organizar dados, facilitar a leitura dos resultados e gerar relatórios mais claros.
 
-##  Objetivo da Aula
+---
 
-- Entender para que serve a cláusula ORDER BY
-- Utilizar ordenação crescente (ASC) e decrescente (DESC)
-- Ordenar resultados por uma ou mais colunas
-- Aplicar a ordenação em consultas simples com SELECT
+---
 
-##  O que é o ORDER BY
+## 🔹 Sintaxe do ORDER BY
 
-A cláusula ORDER BY define a ordem em que os registros serão exibidos no resultado de uma consulta SQL.
+A cláusula ORDER BY é utilizada para definir a ordem em que os registros serão exibidos no resultado da consulta.
 
-ASC → ordem crescente (padrão)  
-DESC → ordem decrescente  
+Sintaxe geral:
 
-Quando nenhuma opção é informada, o SQL utiliza automaticamente ASC.
-
-##  Sintaxe Básica
-
-SELECT coluna(s)  
+SELECT coluna  
 FROM tabela  
 ORDER BY coluna_a_ordenar [ASC | DESC];
 
-##  Exemplos Práticos
+ASC  → ordem crescente (padrão)  
+DESC → ordem decrescente  
 
-### 1. Ordenar todos os livros pelo nome
+Se nenhuma opção for informada, o SQL utiliza automaticamente ASC.
+
+---
+
+---
+
+## 📌 Exemplos de Ordenação
+
+### 🔸 Ordenar todos os livros pelo nome
 
 SELECT *  
 FROM Livro  
@@ -36,7 +37,9 @@ ORDER BY NomeLivro;
 Resultado:  
 Os livros serão exibidos em ordem alfabética (A → Z).
 
-### 2. Ordenar livros pelo ID da editora
+---
+
+### 🔸 Ordenar livros pelo ID da editora
 
 SELECT NomeLivro, IdEditora  
 FROM Livro  
@@ -45,7 +48,9 @@ ORDER BY IdEditora;
 Resultado:  
 Os livros ficam organizados conforme o ID da editora, em ordem crescente.
 
-### 3. Ordenar livros pelo preço (do maior para o menor)
+---
+
+### 🔸 Ordenar livros pelo preço (decrescente)
 
 SELECT NomeLivro, PrecoLivro  
 FROM Livro  
@@ -54,38 +59,49 @@ ORDER BY PrecoLivro DESC;
 Resultado:  
 Os livros mais caros aparecem primeiro.
 
-### 4. Ordenar por mais de uma coluna (ordem crescente)
+---
+
+### 🔸 Ordenar por mais de uma coluna (ordem crescente)
 
 SELECT NomeLivro, PrecoLivro, IdEditora  
 FROM Livro  
 ORDER BY IdEditora, PrecoLivro ASC;
 
-Ordem aplicada:
-1. Primeiro pelo IdEditora
-2. Depois pelo Preço do Livro (menor para maior)
+Ordem aplicada:  
+1. Primeiro pelo IdEditora  
+2. Depois pelo preço do livro (menor para maior)
 
-### 5. Ordenar por múltiplas colunas com regras diferentes
+---
+
+### 🔸 Ordenar por múltiplas colunas com regras diferentes
 
 SELECT NomeLivro, PrecoLivro, IdEditora  
 FROM Livro  
 ORDER BY IdEditora ASC, PrecoLivro DESC;
 
-Ordem aplicada:
-- Editoras em ordem crescente
-- Dentro de cada editora, livros do mais caro para o mais barato
+Ordem aplicada:  
+- Editoras em ordem crescente  
+- Dentro de cada editora, livros do mais caro para o mais barato  
+
+---
+
+---
 
 ## ⚠️ Observações Importantes
 
-- ORDER BY sempre deve ser a última cláusula da consulta
-- É possível ordenar por uma ou várias colunas
-- Cada coluna pode ter sua própria regra (ASC ou DESC)
+- ORDER BY deve ser a última cláusula da consulta  
+- É possível ordenar por uma ou várias colunas  
+- Cada coluna pode ter sua própria regra (ASC ou DESC)  
+- Muito utilizado em relatórios e listagens de dados  
 
-## 
+---
 
-- ORDER BY organiza os resultados das consultas
-- ASC é a ordenação padrão
-- DESC inverte a ordem
-- Pode ser usado com múltiplas colunas
-- Essencial para relatórios e visualização de dados
+---
 
+## ✅ Resumo da Aula
 
+- ORDER BY organiza os resultados das consultas SQL  
+- ASC é a ordenação padrão  
+- DESC inverte a ordem  
+- Pode ordenar por múltiplas colunas  
+- Essencial para visualização e análise de dados
