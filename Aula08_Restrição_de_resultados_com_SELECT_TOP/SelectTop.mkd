@@ -1,0 +1,153 @@
+# Aula SQL – Restrição de Resultados com SELECT TOP
+
+## Introdução
+
+Nesta aula, vamos estudar a cláusula **`SELECT TOP`**, utilizada para **limitar a quantidade de registros retornados** em uma consulta SQL.
+
+Essa cláusula é muito comum em bancos de dados como o **SQL Server** e é especialmente útil para:
+
+* Retornar apenas os primeiros registros de uma consulta
+* Criar relatórios resumidos
+* Melhorar a leitura dos resultados
+* Testar consultas sem carregar muitos dados
+
+---
+
+## Sintaxe Geral
+
+```sql
+SELECT TOP (NÚMERO | PERCENT) coluna(s)
+FROM tabela
+ORDER BY coluna;
+```
+
+### Explicação
+
+* `TOP (NÚMERO)` → Retorna uma quantidade fixa de registros
+* `TOP (PERCENT)` → Retorna uma porcentagem dos registros
+* `ORDER BY` → Define quais registros serão considerados primeiro
+
+> Observação: o uso de `ORDER BY` é essencial para garantir resultados previsíveis.
+
+---
+
+## Utilizando TOP com Quantidade Fixa
+
+### Exemplo 1 – Retornando os dois primeiros registros
+
+```sql
+SELECT TOP (2) NomeLivro
+FROM Livro
+ORDER BY NomeLivro;
+```
+
+**Explicação:**
+
+* Retorna apenas **dois livros**
+* Ordenados alfabeticamente pelo nome
+
+---
+
+## Utilizando TOP com Percentual
+
+### Exemplo 2 – Retornando 15% dos registros
+
+```sql
+SELECT TOP (15) PERCENT NomeLivro
+FROM Livro
+ORDER BY NomeLivro;
+```
+
+**Explicação:**
+
+* Retorna **15% do total de registros** da tabela
+* Considera a ordem alfabética dos nomes
+
+---
+
+## TOP com Ordenação Decrescente
+
+### Exemplo 3 – Quatro últimos registros em ordem alfabética
+
+```sql
+SELECT TOP (4) NomeLivro
+FROM Livro
+ORDER BY NomeLivro DESC;
+```
+
+**Explicação:**
+
+* Ordena os livros de forma decrescente
+* Retorna os **quatro últimos** conforme essa ordenação
+
+---
+
+### Exemplo 4 – Percentual com ordem decrescente
+
+```sql
+SELECT TOP (15) PERCENT NomeLivro
+FROM Livro
+ORDER BY NomeLivro DESC;
+```
+
+**Explicação:**
+
+* Retorna 15% dos registros
+* Considerando a ordenação decrescente
+
+---
+
+## TOP com Múltiplas Colunas
+
+### Exemplo 5 – Livros mais caros
+
+```sql
+SELECT TOP (4) NomeLivro, PrecoLivro
+FROM Livro
+ORDER BY PrecoLivro DESC;
+```
+
+**Explicação:**
+
+* Retorna os **quatro livros mais caros**
+* Ordenação baseada no preço
+
+---
+
+## Utilizando TOP com WITH TIES
+
+A cláusula **`WITH TIES`** é utilizada para **incluir registros adicionais** quando houver empate no critério de ordenação.
+
+### Exemplo 6 – TOP com empate de valores
+
+```sql
+SELECT TOP (3) WITH TIES NomeLivro, IdAssunto
+FROM Livro
+ORDER BY IdAssunto DESC;
+```
+
+**Explicação:**
+
+* Retorna no mínimo **três registros**
+* Se outros registros possuírem o mesmo `IdAssunto` do último resultado, eles também serão incluídos
+
+---
+
+## Boas Práticas
+
+* Sempre utilize `ORDER BY` junto com `TOP`
+* Prefira `TOP (NÚMERO)` para resultados mais previsíveis
+* Use `WITH TIES` quando empates forem relevantes para o resultado
+* Evite `TOP PERCENT` em tabelas pequenas
+
+---
+
+## Conclusão
+
+A cláusula `SELECT TOP` é uma ferramenta poderosa para **controlar a quantidade de dados retornados** em consultas SQL.
+
+Seu uso correto, aliado ao `ORDER BY`, garante consultas mais eficientes, organizadas e adequadas para relatórios, testes e análises de dados.
+
+```sql
+SELECT TOP (1) 'Consulta bem estruturada é consulta eficiente';
+```
