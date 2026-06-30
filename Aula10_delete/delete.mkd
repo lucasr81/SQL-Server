@@ -1,348 +1,449 @@
-# Filtrando Resultados de Consultas com `WHERE`
+# Exclusão de Registros com `DELETE FROM`
 
 ## Objetivo
 
-A cláusula `WHERE` é utilizada para **filtrar os registros** retornados por uma consulta SQL. Ela permite exibir apenas as linhas que atendem a uma determinada condição.
+A instrução `DELETE FROM` é utilizada para **excluir registros (linhas)** de uma tabela em um banco de dados.
+
+Diferente do comando `DROP`, que remove uma tabela inteira, o `DELETE` remove apenas os registros desejados, mantendo a estrutura da tabela.
 
 ---
 
 # Sintaxe
 
 ```sql
-SELECT coluna1, coluna2
-FROM tabela
-WHERE condição
-[ORDER BY coluna];
+DELETE FROM tabela
+WHERE condição;
 ```
 
-## Estrutura da Consulta
+## Estrutura
 
 | Cláusula | Função |
 |----------|--------|
-| `SELECT` | Seleciona as colunas que serão exibidas. |
-| `FROM` | Define a tabela onde os dados serão consultados. |
-| `WHERE` | Filtra os registros de acordo com uma condição. |
-| `ORDER BY` | Ordena os resultados da consulta (opcional). |
+| `DELETE FROM` | Define a tabela da qual os registros serão removidos. |
+| `WHERE` | Especifica quais registros serão excluídos. |
 
 ---
 
-# Como funciona o `WHERE`
-
-O SQL primeiro acessa a tabela informada no `FROM` e, em seguida, aplica a condição definida no `WHERE`. Apenas os registros que satisfazem essa condição serão retornados.
+# Como funciona o `DELETE`
 
 Fluxo da execução:
 
 ```text
 Tabela
    ↓
-WHERE (Filtro)
+WHERE (Seleciona os registros)
    ↓
-SELECT (Colunas)
-   ↓
-ORDER BY (Ordenação)
+DELETE (Remove os registros encontrados)
 ```
 
 ---
 
-# Operadores de Comparação
+# Exemplo da tabela
 
-Os operadores são utilizados para definir a condição do filtro.
+Suponha que a tabela **Assunto** possua os seguintes dados:
 
-| Operador | Significado | Exemplo |
-|----------|-------------|----------|
-| `=` | Igual | `PrecoLivro = 100` |
-| `>` | Maior que | `PrecoLivro > 100` |
-| `<` | Menor que | `PrecoLivro < 100` |
-| `>=` | Maior ou igual | `PrecoLivro >= 50` |
-| `<=` | Menor ou igual | `PrecoLivro <= 200` |
-| `<>` | Diferente | `IdEditora <> 3` |
-| `!=` | Diferente (alguns bancos) | `IdEditora != 3` |
+| IdAssunto | NomeAssunto |
+|-----------|-------------|
+| 1 | Banco de Dados |
+| 2 | SQL |
+| 3 | Python |
+| 4 | Java |
+| 5 | Redes |
+| 6 | Linux |
+| 7 | Cloud |
+| 8 | Segurança |
 
 ---
 
-# Operadores Lógicos
+# Visualizando os registros
 
-Também é possível combinar várias condições.
-
-| Operador | Função |
-|----------|--------|
-| `AND` | Todas as condições devem ser verdadeiras. |
-| `OR` | Pelo menos uma condição deve ser verdadeira. |
-| `NOT` | Inverte uma condição. |
-
-Exemplo:
+Antes de excluir qualquer dado, é recomendável verificar o conteúdo da tabela.
 
 ```sql
 SELECT *
-FROM Livro
-WHERE PrecoLivro > 100
-AND IdEditora = 3;
+FROM Assunto;
 ```
+
+Resultado:
+
+| IdAssunto | NomeAssunto |
+|-----------|-------------|
+| 1 | Banco de Dados |
+| 2 | SQL |
+| 3 | Python |
+| 4 | Java |
+| 5 | Redes |
+| 6 | Linux |
+| 7 | Cloud |
+| 8 | Segurança |
 
 ---
 
-# Exemplo 1 – Filtrando livros por editora
-
-### Consulta
+# Exemplo 1 – Excluindo um registro pelo ID
 
 ```sql
-SELECT NomeLivro, DataPub
-FROM Livro
-WHERE IdEditora = 3;
+DELETE FROM Assunto
+WHERE IdAssunto = 8;
 ```
 
 ### Explicação
 
-A consulta retorna:
+Esta consulta remove apenas o registro cujo **IdAssunto** seja igual a **8**.
 
-- Nome do livro
-- Data de publicação
+Após a exclusão:
 
-Somente dos livros cuja editora possui o código **3**.
-
-### Resultado ilustrativo
-
-| NomeLivro | DataPub |
-|------------|----------|
-| O Hobbit | 2018 |
-| Duna | 2022 |
+| IdAssunto | NomeAssunto |
+|-----------|-------------|
+| 1 | Banco de Dados |
+| 2 | SQL |
+| 3 | Python |
+| 4 | Java |
+| 5 | Redes |
+| 6 | Linux |
+| 7 | Cloud |
 
 ---
 
-# Exemplo 2 – Filtrando autores pelo sobrenome
+# Conferindo o resultado
 
-### Consulta
-
-```sql
-SELECT IdAutor, NomeAutor
-FROM Autor
-WHERE SobrenomeAutor = 'Verne';
-```
-
-### Explicação
-
-Esta consulta procura todos os autores cujo sobrenome seja **Verne**.
-
-Observe que textos devem estar entre aspas simples.
+Após executar o `DELETE`, é uma boa prática verificar se o registro foi realmente removido.
 
 ```sql
-'Verne'
-```
-
-Números não utilizam aspas.
-
-```sql
-IdAutor = 10
+SELECT *
+FROM Assunto;
 ```
 
 ---
 
-# Exemplo 3 – Livros com preço maior que R$100
+# Por que utilizar o ID?
 
-### Consulta
+Sempre que possível, utilize a chave primária (`ID`) para excluir registros.
+
+### Correto
 
 ```sql
-SELECT NomeLivro, PrecoLivro
-FROM Livro
-WHERE PrecoLivro > 100
-ORDER BY PrecoLivro;
+DELETE FROM Assunto
+WHERE IdAssunto = 8;
 ```
 
-### Explicação
+### Motivo
 
-A consulta realiza quatro etapas:
+O ID é único.
 
-1. Seleciona o nome do livro.
-2. Seleciona o preço.
-3. Filtra apenas livros com preço superior a R$100.
-4. Ordena os resultados pelo preço.
-
-### Resultado ilustrativo
-
-| NomeLivro | Preço |
-|------------|--------|
-| SQL Avançado | 120 |
-| Banco de Dados | 180 |
-| Engenharia de Dados | 250 |
+Apenas um registro será removido.
 
 ---
 
-# ORDER BY
+# Excluindo utilizando texto
 
-A cláusula `ORDER BY` organiza os resultados da consulta.
-
-### Ordem crescente (padrão)
+Também é possível excluir registros utilizando valores de texto.
 
 ```sql
-ORDER BY PrecoLivro;
+DELETE FROM Assunto
+WHERE NomeAssunto = 'Java';
 ```
 
-ou
+Resultado:
 
-```sql
-ORDER BY PrecoLivro ASC;
-```
-
-### Ordem decrescente
-
-```sql
-ORDER BY PrecoLivro DESC;
-```
+O registro cujo nome seja **Java** será removido.
 
 ---
 
-# Exemplo 4 – Utilizando Subconsulta (Subquery)
+# Atenção
 
-### Consulta
+Caso existam dois registros com o mesmo nome:
+
+| IdAssunto | NomeAssunto |
+|-----------|-------------|
+| 4 | Java |
+| 12 | Java |
+
+Ambos serão excluídos.
+
+Por isso, prefira utilizar o ID.
+
+---
+
+# Utilizando operadores de comparação
+
+O `DELETE` aceita praticamente todos os operadores utilizados no `WHERE`.
+
+## Igual
 
 ```sql
-SELECT NomeLivro, DataPub
-FROM Livro
-WHERE IdEditora = (
-    SELECT IdEditora
-    FROM Editora
-    WHERE NomeEditora = 'Aleph'
-)
-ORDER BY NomeLivro;
+DELETE FROM Assunto
+WHERE IdAssunto = 5;
 ```
 
 ---
 
-# Como essa consulta funciona?
-
-Ela é executada em duas etapas.
-
-## Primeira etapa
-
-O banco executa a consulta interna.
+## Diferente
 
 ```sql
-SELECT IdEditora
-FROM Editora
-WHERE NomeEditora = 'Aleph';
+DELETE FROM Assunto
+WHERE IdAssunto <> 5;
 ```
 
-Suponha que o resultado seja:
-
-| IdEditora |
-|-----------|
-| 5 |
+Exclui todos os registros, exceto o de ID 5.
 
 ---
 
-## Segunda etapa
-
-O SQL substitui automaticamente esse resultado.
+## Maior que
 
 ```sql
-SELECT NomeLivro, DataPub
-FROM Livro
-WHERE IdEditora = 5
-ORDER BY NomeLivro;
+DELETE FROM Assunto
+WHERE IdAssunto > 5;
 ```
 
-Assim, todos os livros da editora **Aleph** serão retornados.
+Exclui todos os registros cujo ID seja maior que 5.
 
 ---
 
-# O que é uma Subconsulta?
+## Menor que
 
-Uma subconsulta (Subquery) é uma consulta SQL executada dentro de outra consulta.
+```sql
+DELETE FROM Assunto
+WHERE IdAssunto < 3;
+```
 
-Ela serve para obter um valor que será utilizado na consulta principal.
+Remove todos os registros com ID menor que 3.
+
+---
+
+## Maior ou igual
+
+```sql
+DELETE FROM Assunto
+WHERE IdAssunto >= 6;
+```
+
+---
+
+## Menor ou igual
+
+```sql
+DELETE FROM Assunto
+WHERE IdAssunto <= 2;
+```
+
+---
+
+# Utilizando operadores lógicos
+
+## AND
+
+Remove apenas registros que atendam às duas condições.
+
+```sql
+DELETE FROM Livro
+WHERE IdEditora = 3
+AND PrecoLivro > 100;
+```
+
+---
+
+## OR
+
+Remove registros que atendam a pelo menos uma condição.
+
+```sql
+DELETE FROM Livro
+WHERE IdEditora = 3
+OR PrecoLivro > 100;
+```
+
+---
+
+## NOT
+
+Inverte a condição.
+
+```sql
+DELETE FROM Assunto
+WHERE NOT IdAssunto = 5;
+```
+
+Ou
+
+```sql
+DELETE FROM Assunto
+WHERE IdAssunto <> 5;
+```
+
+---
+
+# Utilizando BETWEEN
+
+Exclui registros dentro de um intervalo.
+
+```sql
+DELETE FROM Assunto
+WHERE IdAssunto BETWEEN 3 AND 6;
+```
+
+Serão removidos os IDs:
+
+- 3
+- 4
+- 5
+- 6
+
+---
+
+# Utilizando IN
+
+Remove vários registros específicos.
+
+```sql
+DELETE FROM Assunto
+WHERE IdAssunto IN (2,5,8);
+```
+
+Equivale a:
+
+```sql
+DELETE FROM Assunto
+WHERE IdAssunto = 2
+OR IdAssunto = 5
+OR IdAssunto = 8;
+```
+
+---
+
+# Utilizando LIKE
+
+Também é possível excluir utilizando padrões de texto.
+
+```sql
+DELETE FROM Assunto
+WHERE NomeAssunto LIKE 'P%';
+```
+
+Exclui todos os assuntos cujo nome começa com **P**.
 
 Exemplo:
 
-```sql
-WHERE IdEditora = (
-    SELECT IdEditora
-    FROM Editora
-    WHERE NomeEditora = 'Aleph'
-)
-```
-
-Nesse caso:
-
-- A consulta interna encontra o código da editora.
-- A consulta externa utiliza esse código para localizar os livros.
+- Python
+- PHP
+- PostgreSQL
 
 ---
 
-# Fluxo de execução de uma Subconsulta
+# Utilizando IS NULL
 
-```text
-Consulta Principal
-        │
-        ▼
-Executa a Subconsulta
-        │
-        ▼
-Obtém um valor
-        │
-        ▼
-Substitui o valor no WHERE
-        │
-        ▼
-Executa a consulta principal
+Remove registros cujo valor seja nulo.
+
+```sql
+DELETE FROM Livro
+WHERE DataPub IS NULL;
 ```
 
 ---
 
-# Boas Práticas
+# Excluindo TODOS os registros
 
-- Utilize `WHERE` sempre que precisar limitar os resultados.
-- Utilize aspas simples para textos.
-- Não utilize aspas para números.
-- Utilize `ORDER BY` para organizar os resultados.
-- Prefira Subqueries quando o valor depende de outra tabela.
-- Escreva consultas bem indentadas para facilitar a leitura.
+```sql
+DELETE FROM Assunto;
+```
+
+## Atenção
+
+Sem a cláusula `WHERE`, **todos os registros da tabela serão removidos**.
+
+A estrutura da tabela permanece.
 
 ---
 
-# Erros Comuns
+# Diferença entre DELETE, TRUNCATE e DROP
 
-## Esquecer as aspas
+| Comando | Remove registros | Remove estrutura |
+|----------|-----------------|------------------|
+| `DELETE` | Sim | Não |
+| `TRUNCATE` | Sim (todos) | Não |
+| `DROP` | Sim | Sim |
 
-Errado
+---
+
+# DELETE x TRUNCATE
+
+## DELETE
+
+- Pode utilizar `WHERE`
+- Remove registros específicos
+- Pode ser revertido em uma transação (dependendo do SGBD)
+- Mais lento
 
 ```sql
-WHERE SobrenomeAutor = Verne;
-```
-
-Correto
-
-```sql
-WHERE SobrenomeAutor = 'Verne';
+DELETE FROM Assunto
+WHERE IdAssunto = 5;
 ```
 
 ---
 
-## Comparar número como texto
+## TRUNCATE
 
-Errado
-
-```sql
-WHERE IdEditora = '3';
-```
-
-Correto
+- Remove todos os registros
+- Não aceita `WHERE`
+- Muito mais rápido
+- Reinicia o contador de identidade (em muitos bancos)
 
 ```sql
-WHERE IdEditora = 3;
+TRUNCATE TABLE Assunto;
 ```
 
 ---
+
+# Boas práticas
+
+- Sempre execute um `SELECT` antes do `DELETE`.
+- Utilize o ID sempre que possível.
+- Nunca execute um `DELETE` sem verificar a condição.
+- Faça backup antes de excluir muitos registros.
+- Em bancos de produção, execute dentro de uma transação quando possível.
+
+---
+
+# Erros comuns
 
 ## Esquecer o WHERE
 
 Errado
 
 ```sql
-SELECT *
-FROM Livro;
+DELETE FROM Assunto;
 ```
 
-Caso a intenção fosse filtrar, todos os registros serão retornados.
+Todos os registros serão removidos.
+
+---
+
+## Excluir utilizando texto quando existe repetição
+
+```sql
+DELETE FROM Assunto
+WHERE NomeAssunto = 'SQL';
+```
+
+Caso existam vários registros chamados SQL, todos serão removidos.
+
+---
+
+## Não conferir antes
+
+Sempre faça:
+
+```sql
+SELECT *
+FROM Assunto
+WHERE IdAssunto = 8;
+```
+
+Depois:
+
+```sql
+DELETE FROM Assunto
+WHERE IdAssunto = 8;
+```
 
 ---
 
@@ -350,18 +451,18 @@ Caso a intenção fosse filtrar, todos os registros serão retornados.
 
 | Comando | Função |
 |----------|---------|
-| `WHERE` | Filtra registros |
+| `DELETE` | Exclui registros |
+| `WHERE` | Define quais registros serão removidos |
 | `=` | Igual |
+| `<>` | Diferente |
 | `>` | Maior que |
 | `<` | Menor que |
 | `>=` | Maior ou igual |
 | `<=` | Menor ou igual |
-| `<>` | Diferente |
-| `AND` | Todas as condições devem ser verdadeiras |
-| `OR` | Pelo menos uma condição deve ser verdadeira |
-| `NOT` | Inverte uma condição |
-| `ORDER BY` | Ordena os resultados |
-| `Subquery` | Consulta dentro de outra consulta |
+| `BETWEEN` | Intervalo |
+| `IN` | Lista de valores |
+| `LIKE` | Pesquisa por padrão |
+| `IS NULL` | Valores nulos |
 
 ---
 
@@ -369,40 +470,40 @@ Caso a intenção fosse filtrar, todos os registros serão retornados.
 
 ## Exercício 1
 
-Liste o nome e o preço dos livros que custam mais de R$80.
+Exclua o assunto cujo ID seja **10**.
 
 ---
 
 ## Exercício 2
 
-Liste todos os autores cujo sobrenome seja **Silva**.
+Exclua todos os assuntos cujo ID seja maior que **15**.
 
 ---
 
 ## Exercício 3
 
-Liste os livros da editora **Pearson**, utilizando uma Subquery.
+Exclua todos os assuntos com nome **Java**.
 
 ---
 
 ## Exercício 4
 
-Liste os livros da editora de código **2**, ordenando pelo nome do livro.
+Exclua todos os assuntos cujo nome comece com a letra **P**.
 
 ---
 
 ## Exercício 5
 
-Liste todos os livros com preço menor que R$50.
+Exclua todos os registros com ID entre **20** e **30**.
 
 ---
 
 ## Exercício 6
 
-Liste todos os autores cujo código seja maior que 10.
+Exclua todos os registros cujo ID seja **2**, **5** ou **8**.
 
 ---
 
 # Conclusão
 
-A cláusula `WHERE` é um dos recursos mais importantes da linguagem SQL. Ela permite filtrar registros, tornando as consultas mais rápidas, precisas e úteis. Combinada com operadores de comparação, operadores lógicos, `ORDER BY` e Subqueries, é possível criar consultas poderosas para atender praticamente qualquer necessidade em bancos de dados relacionais.
+O comando `DELETE FROM` é uma das principais instruções da linguagem SQL para remover registros de uma tabela. Seu uso exige atenção, principalmente em ambientes de produção, pois uma exclusão incorreta pode resultar em perda de dados. A utilização da cláusula `WHERE`, preferencialmente com a chave primária (`ID`), torna as operações muito mais seguras e precisas.
