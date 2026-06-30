@@ -1,0 +1,409 @@
+
+# Filtrando Resultados de Consultas com `WHERE`
+
+## Objetivo
+
+A cláusula `WHERE` é utilizada para **filtrar os registros** retornados por uma consulta SQL. Ela permite exibir apenas as linhas que atendem a uma determinada condição.
+
+---
+
+# Sintaxe
+
+```sql
+SELECT coluna1, coluna2
+FROM tabela
+WHERE condição
+[ORDER BY coluna];
+```
+
+## Estrutura da Consulta
+
+| Cláusula | Função |
+|----------|--------|
+| `SELECT` | Seleciona as colunas que serão exibidas. |
+| `FROM` | Define a tabela onde os dados serão consultados. |
+| `WHERE` | Filtra os registros de acordo com uma condição. |
+| `ORDER BY` | Ordena os resultados da consulta (opcional). |
+
+---
+
+# Como funciona o `WHERE`
+
+O SQL primeiro acessa a tabela informada no `FROM` e, em seguida, aplica a condição definida no `WHERE`. Apenas os registros que satisfazem essa condição serão retornados.
+
+Fluxo da execução:
+
+```text
+Tabela
+   ↓
+WHERE (Filtro)
+   ↓
+SELECT (Colunas)
+   ↓
+ORDER BY (Ordenação)
+```
+
+---
+
+# Operadores de Comparação
+
+Os operadores são utilizados para definir a condição do filtro.
+
+| Operador | Significado | Exemplo |
+|----------|-------------|----------|
+| `=` | Igual | `PrecoLivro = 100` |
+| `>` | Maior que | `PrecoLivro > 100` |
+| `<` | Menor que | `PrecoLivro < 100` |
+| `>=` | Maior ou igual | `PrecoLivro >= 50` |
+| `<=` | Menor ou igual | `PrecoLivro <= 200` |
+| `<>` | Diferente | `IdEditora <> 3` |
+| `!=` | Diferente (alguns bancos) | `IdEditora != 3` |
+
+---
+
+# Operadores Lógicos
+
+Também é possível combinar várias condições.
+
+| Operador | Função |
+|----------|--------|
+| `AND` | Todas as condições devem ser verdadeiras. |
+| `OR` | Pelo menos uma condição deve ser verdadeira. |
+| `NOT` | Inverte uma condição. |
+
+Exemplo:
+
+```sql
+SELECT *
+FROM Livro
+WHERE PrecoLivro > 100
+AND IdEditora = 3;
+```
+
+---
+
+# Exemplo 1 – Filtrando livros por editora
+
+### Consulta
+
+```sql
+SELECT NomeLivro, DataPub
+FROM Livro
+WHERE IdEditora = 3;
+```
+
+### Explicação
+
+A consulta retorna:
+
+- Nome do livro
+- Data de publicação
+
+Somente dos livros cuja editora possui o código **3**.
+
+### Resultado ilustrativo
+
+| NomeLivro | DataPub |
+|------------|----------|
+| O Hobbit | 2018 |
+| Duna | 2022 |
+
+---
+
+# Exemplo 2 – Filtrando autores pelo sobrenome
+
+### Consulta
+
+```sql
+SELECT IdAutor, NomeAutor
+FROM Autor
+WHERE SobrenomeAutor = 'Verne';
+```
+
+### Explicação
+
+Esta consulta procura todos os autores cujo sobrenome seja **Verne**.
+
+Observe que textos devem estar entre aspas simples.
+
+```sql
+'Verne'
+```
+
+Números não utilizam aspas.
+
+```sql
+IdAutor = 10
+```
+
+---
+
+# Exemplo 3 – Livros com preço maior que R$100
+
+### Consulta
+
+```sql
+SELECT NomeLivro, PrecoLivro
+FROM Livro
+WHERE PrecoLivro > 100
+ORDER BY PrecoLivro;
+```
+
+### Explicação
+
+A consulta realiza quatro etapas:
+
+1. Seleciona o nome do livro.
+2. Seleciona o preço.
+3. Filtra apenas livros com preço superior a R$100.
+4. Ordena os resultados pelo preço.
+
+### Resultado ilustrativo
+
+| NomeLivro | Preço |
+|------------|--------|
+| SQL Avançado | 120 |
+| Banco de Dados | 180 |
+| Engenharia de Dados | 250 |
+
+---
+
+# ORDER BY
+
+A cláusula `ORDER BY` organiza os resultados da consulta.
+
+### Ordem crescente (padrão)
+
+```sql
+ORDER BY PrecoLivro;
+```
+
+ou
+
+```sql
+ORDER BY PrecoLivro ASC;
+```
+
+### Ordem decrescente
+
+```sql
+ORDER BY PrecoLivro DESC;
+```
+
+---
+
+# Exemplo 4 – Utilizando Subconsulta (Subquery)
+
+### Consulta
+
+```sql
+SELECT NomeLivro, DataPub
+FROM Livro
+WHERE IdEditora = (
+    SELECT IdEditora
+    FROM Editora
+    WHERE NomeEditora = 'Aleph'
+)
+ORDER BY NomeLivro;
+```
+
+---
+
+# Como essa consulta funciona?
+
+Ela é executada em duas etapas.
+
+## Primeira etapa
+
+O banco executa a consulta interna.
+
+```sql
+SELECT IdEditora
+FROM Editora
+WHERE NomeEditora = 'Aleph';
+```
+
+Suponha que o resultado seja:
+
+| IdEditora |
+|-----------|
+| 5 |
+
+---
+
+## Segunda etapa
+
+O SQL substitui automaticamente esse resultado.
+
+```sql
+SELECT NomeLivro, DataPub
+FROM Livro
+WHERE IdEditora = 5
+ORDER BY NomeLivro;
+```
+
+Assim, todos os livros da editora **Aleph** serão retornados.
+
+---
+
+# O que é uma Subconsulta?
+
+Uma subconsulta (Subquery) é uma consulta SQL executada dentro de outra consulta.
+
+Ela serve para obter um valor que será utilizado na consulta principal.
+
+Exemplo:
+
+```sql
+WHERE IdEditora = (
+    SELECT IdEditora
+    FROM Editora
+    WHERE NomeEditora = 'Aleph'
+)
+```
+
+Nesse caso:
+
+- A consulta interna encontra o código da editora.
+- A consulta externa utiliza esse código para localizar os livros.
+
+---
+
+# Fluxo de execução de uma Subconsulta
+
+```text
+Consulta Principal
+        │
+        ▼
+Executa a Subconsulta
+        │
+        ▼
+Obtém um valor
+        │
+        ▼
+Substitui o valor no WHERE
+        │
+        ▼
+Executa a consulta principal
+```
+
+---
+
+# Boas Práticas
+
+- Utilize `WHERE` sempre que precisar limitar os resultados.
+- Utilize aspas simples para textos.
+- Não utilize aspas para números.
+- Utilize `ORDER BY` para organizar os resultados.
+- Prefira Subqueries quando o valor depende de outra tabela.
+- Escreva consultas bem indentadas para facilitar a leitura.
+
+---
+
+# Erros Comuns
+
+## Esquecer as aspas
+
+Errado
+
+```sql
+WHERE SobrenomeAutor = Verne;
+```
+
+Correto
+
+```sql
+WHERE SobrenomeAutor = 'Verne';
+```
+
+---
+
+## Comparar número como texto
+
+Errado
+
+```sql
+WHERE IdEditora = '3';
+```
+
+Correto
+
+```sql
+WHERE IdEditora = 3;
+```
+
+---
+
+## Esquecer o WHERE
+
+Errado
+
+```sql
+SELECT *
+FROM Livro;
+```
+
+Caso a intenção fosse filtrar, todos os registros serão retornados.
+
+---
+
+# Resumo
+
+| Comando | Função |
+|----------|---------|
+| `WHERE` | Filtra registros |
+| `=` | Igual |
+| `>` | Maior que |
+| `<` | Menor que |
+| `>=` | Maior ou igual |
+| `<=` | Menor ou igual |
+| `<>` | Diferente |
+| `AND` | Todas as condições devem ser verdadeiras |
+| `OR` | Pelo menos uma condição deve ser verdadeira |
+| `NOT` | Inverte uma condição |
+| `ORDER BY` | Ordena os resultados |
+| `Subquery` | Consulta dentro de outra consulta |
+
+---
+
+# Exercícios
+
+## Exercício 1
+
+Liste o nome e o preço dos livros que custam mais de R$80.
+
+---
+
+## Exercício 2
+
+Liste todos os autores cujo sobrenome seja **Silva**.
+
+---
+
+## Exercício 3
+
+Liste os livros da editora **Pearson**, utilizando uma Subquery.
+
+---
+
+## Exercício 4
+
+Liste os livros da editora de código **2**, ordenando pelo nome do livro.
+
+---
+
+## Exercício 5
+
+Liste todos os livros com preço menor que R$50.
+
+---
+
+## Exercício 6
+
+Liste todos os autores cujo código seja maior que 10.
+
+---
+
+# Conclusão
+
+A cláusula `WHERE` é um dos recursos mais importantes da linguagem SQL. Ela permite filtrar registros, tornando as consultas mais rápidas, precisas e úteis. Combinada com operadores de comparação, operadores lógicos, `ORDER BY` e Subqueries, é possível criar consultas poderosas para atender praticamente qualquer necessidade em bancos de dados relacionais.
