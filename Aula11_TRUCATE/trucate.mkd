@@ -1,0 +1,264 @@
+# Aula: TRUNCATE TABLE – Limpando uma Tabela no SQL Server
+
+## Objetivo
+
+Nesta aula, você aprenderá como utilizar o comando `TRUNCATE TABLE` para remover **todos os registros** de uma tabela de forma rápida e eficiente.
+
+---
+
+# O que é o TRUNCATE TABLE?
+
+O comando `TRUNCATE TABLE` remove **todas as linhas** de uma tabela, preservando sua estrutura, colunas, índices e restrições.
+
+Após a execução do comando:
+
+- Todos os registros são apagados.
+- A tabela continua existindo.
+- O contador da coluna `IDENTITY` é reiniciado para o valor inicial.
+- Não é possível utilizar a cláusula `WHERE`.
+
+---
+
+# Sintaxe
+
+```sql
+TRUNCATE TABLE nome_tabela;
+```
+
+### Exemplo
+
+```sql
+TRUNCATE TABLE Clientes;
+```
+
+Todos os registros da tabela **Clientes** serão removidos.
+
+---
+
+# Criando uma tabela para testes
+
+```sql
+CREATE TABLE Teste(
+    IdTeste SMALLINT PRIMARY KEY IDENTITY,
+    ValorTeste SMALLINT NOT NULL
+);
+```
+
+### Explicação
+
+| Elemento | Descrição |
+|----------|-----------|
+| IdTeste | Chave primária da tabela |
+| IDENTITY | Gera números automaticamente (1,2,3...) |
+| ValorTeste | Campo obrigatório para armazenar um número |
+
+---
+
+# Inserindo registros automaticamente
+
+Para evitar inserir registros manualmente, podemos utilizar um laço `WHILE`.
+
+```sql
+DECLARE @Contador INT = 1;
+
+WHILE @Contador <= 100
+BEGIN
+    INSERT INTO Teste (ValorTeste)
+    VALUES (@Contador * 3);
+
+    SET @Contador = @Contador + 1;
+END
+```
+
+### O que esse código faz?
+
+- Cria uma variável chamada `@Contador`
+- Começa em 1
+- Executa enquanto o contador for menor ou igual a 100
+- Insere um registro por vez
+- Multiplica o valor por 3
+- Incrementa o contador
+
+---
+
+## Resultado
+
+Os primeiros registros serão:
+
+| IdTeste | ValorTeste |
+|---------:|-----------:|
+| 1 | 3 |
+| 2 | 6 |
+| 3 | 9 |
+| 4 | 12 |
+| 5 | 15 |
+
+...
+
+Até:
+
+| IdTeste | ValorTeste |
+|---------:|-----------:|
+|100|300|
+
+---
+
+# Consultando os dados
+
+```sql
+SELECT *
+FROM Teste;
+```
+
+Resultado esperado:
+
+```
+100 registros encontrados.
+```
+
+---
+
+# Limpando a tabela
+
+Agora vamos remover todos os registros.
+
+```sql
+TRUNCATE TABLE Teste;
+```
+
+---
+
+# Conferindo o resultado
+
+```sql
+SELECT *
+FROM Teste;
+```
+
+Resultado:
+
+```
+Nenhum registro encontrado.
+```
+
+A estrutura da tabela continua existindo.
+
+---
+
+# Verificando o IDENTITY
+
+Podemos verificar o último valor do contador automático.
+
+```sql
+SELECT IDENT_CURRENT('Teste');
+```
+
+Depois do `TRUNCATE`, o valor retornado será:
+
+```
+0
+```
+
+ou o valor inicial da identidade (dependendo do contexto da tabela).
+
+Ao inserir um novo registro:
+
+```sql
+INSERT INTO Teste (ValorTeste)
+VALUES (500);
+```
+
+Consultando novamente:
+
+```sql
+SELECT *
+FROM Teste;
+```
+
+Resultado:
+
+| IdTeste | ValorTeste |
+|---------:|-----------:|
+|1|500|
+
+Observe que o `IDENTITY` voltou para **1**.
+
+---
+
+# TRUNCATE x DELETE
+
+| Característica | DELETE | TRUNCATE |
+|----------------|--------|----------|
+| Remove todos os registros | Sim | Sim |
+| Permite WHERE | Sim | Não |
+| Remove registros específicos | Sim | Não |
+| Reinicia o IDENTITY | Não (por padrão) | Sim |
+| Geralmente é mais rápido | Não | Sim |
+| Registra exclusão linha por linha | Sim | Não (registro mínimo) |
+
+---
+
+# Quando usar TRUNCATE?
+
+Utilize quando:
+
+- Deseja apagar todos os registros da tabela.
+- Não precisa manter o valor atual do `IDENTITY`.
+- Quer uma operação mais rápida que `DELETE`.
+- Está limpando tabelas de teste, temporárias ou de importação.
+
+---
+
+# Quando NÃO usar?
+
+Evite utilizar quando:
+
+- Precisa apagar apenas alguns registros.
+- Necessita utilizar a cláusula `WHERE`.
+- A tabela é referenciada por uma chave estrangeira (`FOREIGN KEY`) ativa.
+- Precisa registrar a exclusão de cada linha individualmente.
+
+---
+
+# Exemplo completo
+
+```sql
+CREATE TABLE Teste(
+    IdTeste SMALLINT PRIMARY KEY IDENTITY,
+    ValorTeste SMALLINT NOT NULL
+);
+
+DECLARE @Contador INT = 1;
+
+WHILE @Contador <= 100
+BEGIN
+    INSERT INTO Teste (ValorTeste)
+    VALUES (@Contador * 3);
+
+    SET @Contador = @Contador + 1;
+END;
+
+SELECT * FROM Teste;
+
+TRUNCATE TABLE Teste;
+
+SELECT * FROM Teste;
+
+SELECT IDENT_CURRENT('Teste');
+```
+
+---
+
+# Boas práticas
+
+- Utilize `TRUNCATE` apenas quando tiver certeza de que todos os registros podem ser removidos.
+- Sempre faça um `SELECT` antes da limpeza para confirmar os dados.
+- Tenha cuidado em ambientes de produção.
+- Faça backup quando necessário.
+- Prefira `DELETE` quando precisar remover registros específicos.
+
+---
+
+# Resumo
+
+O comando `TRUNCATE TABLE` é uma maneira rápida e eficiente de limpar completamente uma tabela, preservando sua estrutura. Diferentemente do `DELETE`, ele não aceita a cláusula `WHERE` e reinicia o contador da coluna `IDENTITY`, sendo ideal para cenários de testes, cargas de dados e reinicialização de tabelas.
